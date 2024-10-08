@@ -28,6 +28,8 @@ datos<-data.frame(nombre, calificacion_esperadas, area_economia, Felicidad, hora
 
 tab_1<-cbind(tabla, tabla_1)
 tab_2<-cbind(tabla, tabla_1)
+tab_1
+tab_2
 
 #para exportar datos a excel#
 install.packages("openxlsx")  #para instalar la paqueteria#
@@ -38,3 +40,16 @@ library(openxlsx)  #para usar la paqueteria#
 
 setwd("C:/Users/creep/OneDrive/Escritorio/rdatos") #se le pone comillas a la direccion#
 write.xlsx(datos, "prueba.xlsx")
+
+
+# Crear dos data frames
+df1 <- data.frame(a = 1:3, b = 4:6)
+df2 <- data.frame(a = 7:9, b = 10:12)
+
+# Combinar columnas
+df_cbind <- cbind(df1, df2)
+
+# Combinar filas
+df_rbind <- rbind(df1, df2)
+df_cbind
+df_rbind
