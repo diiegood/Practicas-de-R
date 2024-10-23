@@ -1,0 +1,39 @@
+#Coneval Ejericio
+
+#Indicadores de carencia social
+
+#Rezago educativo
+install.packages("data.table")
+install.packages("dplyr")
+install.packages("bit64")
+
+library(bit64)
+library(dplyr)
+library(data.table)
+
+#file.choose() muestra la ruta del archivo manualmente en la consola
+ruta<-("C:\\Users\\creep\\OneDrive\\Escritorio\\poblacion_csv\\poblacion.csv")
+datos<-fread(ruta)
+View(razaed)
+
+#Opcional se genera una matriz de los datos.
+coneval<-matrix(razaed)
+coneval
+
+#nuevos indicadores: (|,!)
+#condicion logica: (|) condicion de uno u otro
+# el simbolo es una negacion (!) de un caracter, para quitar todo menos ese caracter buscado
+#Filtrar datos de trabajadores del hogar y huespedes
+coneval1<-datos %>% filter(!(parentesco>=400 & parentesco < 500 |
+                              parentesco>=700 & parentesco <800))
+
+# (~) simbolo equivalencia: condicional para buscar y remplazar / ALT + 126
+#filtrar datos quitando NA (!is.na)
+View(coneval1)
+#mutate para crear columnas nuevas
+coneval1<-coneval1 %>% mutate(
+  #crear columna año de nacimiento
+  año_e= case_when(!is.na(edad) ~ 2016-edad))
+
+
+
