@@ -1,0 +1,77 @@
+#T-test de dos variables, una continua y una discreta (2 niveles)
+#H0 El peso del niño y fumar durante la gestacion NO estan asociados
+"H0 si p-value >0.05"
+#H1 El peso y el fumar durante la gestacion SI estan asociados.
+"H1 si p-value <0.05"
+
+peso<-c(6.88,7.69,8.88,9.00,7.94,8.25)
+Tabaco<-c("smoker","nonsomeker","nonsmoker","nonsmoker","nonsmoker","smoker")
+
+#para ver los datos
+Tabaco
+peso
+
+datos<-c(data.frame(Tabaco, peso))
+datos
+
+################################################################################
+"Empieza aqui la practica"
+
+#se cargan las librerias
+library(openintro)
+library(tidyverse)
+library(car)
+data(births)
+
+#se comprueba la normalidad de los datos
+"comando pipe %>%  / control+shift+M"
+
+#comando pull / es para extraer la columna (weight), devuelve un vector que contiene solo
+#los valores de esa columna.
+
+smoker<-births %>% filter(smoke == "smoker") %>%  pull(weight)
+nonsmoker <-births %>% filter(smoke == "nonsmoker") %>%  pull(weight)
+
+#Normalidad / test shapiro
+shapiro.test(smoker)
+shapiro.test(nonsmoker)
+
+#si se tienen mas de 30 datos se asume la Normalidad
+length(births$weight)
+
+"Homocedasticidad"
+
+#leveneTest / es para hacer la prueba de Levene, evalua si las varianzas de los dif grupos son iguales.
+#center / especifica que se usa la media como centro de la variabilidad de cada grupo para la campana gauss
+#weight variable dependiente / smoke es la variable independiente.
+
+leveneTest(weight ~ smoke, data=births, center = "median")
+
+#Graficar
+
+ggplot(data = births ) +
+  geom_boxplot(aes(x = smoke, y=weight, fill= smoke)) +
+  theme_bw() + theme(legend.position = "none")
+
+#T-test
+"En este caso T.test devolvera varios parametros como:"
+
+#el valor t-estadistico
+#estimacion de las medais de ambos grupos
+#valor-p, indica si las medias son estadisticamente significativas
+#intervalos de confianza para la diferencia de las medias
+
+"Si el valor p es menor que el nivel de significancia (0.05 usualmente), se puede decir
+que hay una diferencia significativa entre ambas medias de los 2 grupos."
+
+#Esta evalua si hay diferencia significativa en la variable del peso sobre las madres que
+#fuman y no fuman.
+
+T.test(smoker, nonsmoker)
+
+#Smoker > Nonsmoker
+t.test(nonsmoker, smoker, alternative = "greater")
+
+"Se puede ver que el peso de madres fumadoreas sea ligeramente menor, pero la diferencia que comprueba
+si es significativa o no es el T-test, nos da un valor de 0.069, por lo que no podemos decir que el 
+peso de los no fumadores sea mayor al de los fumadores a pesar de que graficamente si se aprecia."
