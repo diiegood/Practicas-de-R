@@ -1,0 +1,16 @@
+df <- read.csv("https://raw.githubusercontent.com/selva86/datasets/master/footfalls.csv")
+
+t.test(df[, 'Loc_A'], df[, 'Loc_B'], paired=FALSE)
+
+#>     Welch Two Sample t-test
+#> data:  df$Loc_A and df$Loc_B
+#> t = 2.1161, df = 17.869, p-value = 0.04864
+#> alternative hypothesis: true difference in means is not equal to 0
+#> 95 percent confidence interval:
+#>   0.05916631 17.70083369
+#> sample estimates:
+#> mean of x mean of y 
+#>    121.72    112.84
+#>    # Compute P Value (area to the right and left extremities of the computed T-Statistic)
+2 * pt(-2.1161, 18)
+#> 0.048532
