@@ -1,0 +1,142 @@
+#modelo es una representacion simplificada  de la realidad. 
+#regresion lineal ayuda a explicar si la variable explica a la otra.
+
+#modelo de regresion simple
+library(gapminder)
+tabla<-data.frame(gapminder)
+
+View(tabla)
+
+#para quitar columna continent
+tabla$continent<-NULL
+
+#para quitar columna year
+tabla$year<-NULL
+
+#para ver la tabla ya filtrada.
+View(tabla)
+#para entender un modelo se debe ver la grafica
+#(para ver la correlacion se debe ver la dispersion de datos)
+plot(tabla$lifeExp, tabla$gdpPercap)
+
+#covarianza /  para ver la relacion de los datos 
+#regla con la covarianza cumple la condicion de que es mayor que 0 , 
+#la relacion entre variables es directa o positiva.
+#si la vocarianza es menor a 0 la correlacion es negativa o no es directa.
+"si la covarianza es muy cercana o parecido a  0 los datos no tienen mucha relacion"
+
+################################################################################
+#medir la fuerza de correlacion de las variables /  "Coeficiente Pearson"
+#si el coeficiente se aceraca a 1 la relacion es muy fuerte pero es directa.
+#si el coeficiente se acerca a -1, entonces la relacion es fuerte pero es inversa
+#si el coeficiente es muy cercano a 0 entonces no hay mucha correlacion
+" por lo que no hay mucha relacion entre los datos"
+
+################################################################################
+#como se lee la covarianza / 
+"para meter la covarianza en R"
+covarianza debe ser cov<0 , cov>0
+cov(tabla$lifeExp, tabla$gdpPercap)
+
+#ver que tan fuerte es la relacion
+cor.test(tabla$lifeExp, tabla$gdpPercap)
+#se pone la variable independiente, despues la variable dependiente.
+regresion<-lm(tabla$gdpPercap~tabla$lifeExp)
+regresion
+
+#t<0.05 / B1 B2
+ "se rechaza"
+ 
+ #R^ que tanto el modelo explica los errores, que tanto se ajusta el modelo.
+ #va explicar que tanto explica, el r^2 minimo debe ser minimo de 85%
+summary(regresion)
+
+"graficar la regresion"
+plot(tabla$lifeExp, tabla$gdpPercap) #quiere decir que los datos son muy dispersos si no se comport como la normal hay muchas anomalias.
+abline(regresion, col="blue")
+
+#para ver un residuo.
+residuos<-residuals(regresion)
+hist(residuos)
+mean(residuos)
+
+#homocedasticidad de los residuos.
+"se deben explicar de manera constante, con un sentido logico" / #mas constante mas homocedasticidad
+plot(tabla$gdpPercap, residuos) #no hay homocedasticidad.
+
+#Test WATSON / que tan independientes son los datos, no debe haber corralacion entre residuos.
+#deben ser independientes entre si. / 1.5-2.5
+
+"no hay independencia entre los residuos y se interrelacion el modelo no sirve"
+
+
+#homocedasticidad, residuos interdependientes, rcuadrada grande , no sirve el modelo
+
+#p value / si el modelo es significativo o no significativo / este responde al modelo
+#t - student / responde con relacion a los coeficientes
+#epsilon (residuos) , como se comportan los errores conforme al modelo que tengo, analisis de errores
+
+#Analisis de residuos
+#los residuos se comporten de manera normal, Jarque Bera. 
+
+################################################################################
+
+"Modelo de machine learning"
+
+install.packages("quatmod")
+install.packages("lubridate")
+install.packages("tidyr")
+install.packages("caret")
+ 
+library(quantmod)
+library(lubridate)
+library(tidyr)
+library(caret)
+library(lattice)
+library(dplyr)
+
+
+###empezamos con el ejercicio 
+"automatizamos el proceso generando la fecha de hoy y filtrando la columna 5"
+
+hoy<-today()  #nos enseña la fecha de hoy
+hoy
+
+#cargar la serie financiera de yahoo finance
+acciones<-getSymbols("AAPL", from ="2020-01-01", to=hoy, 
+           src= "yahoo", auto.assign = F) 
+
+#cargar la serie solo con una columna / se pone en corchete la columna de interes
+acciones<-getSymbols("AMZN", from ="2020-01-01", to=hoy, 
+           src= "yahoo", auto.assign = F) [,6] #se pone  [fila, columna]
+
+#se filtra para obtener una sola columna de serie ajustada.
+
+View(acciones)
+
+acciones<-as.data.frame(acciones)
+plot(acciones)
+
+acciones$Fecha <- rownames(acciones)
+rownames(acciones)<-NULL
+str(acciones)
+View(acciones)
+
+#cambiar el caracter de fecha
+acciones<-acciones$Fecha<-as.Date(acciones$Fecha)
+colnames(acciones)<-c("Precio", "Fecha") #cambiar nombre de columna
+
+################################################################################
+hoy +1
+rango<-(hoy):(hoy+30)
+Precio<-as.numeric(NA)
+tabla_futuro<- as.data.frame(cbind(Precio, rango))
+View(tabla_futuro)
+tabla_futuro$Fecha<-as.Date(tabla_futuro$rango)
+tabla_futuro$rango<-NULL
+
+str(tabla_futuro)
+
+#se unen las tablas
+acciones_completas<-rbind(acciones, tabla_futuro)
+View(acciones_completas)
