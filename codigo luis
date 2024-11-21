@@ -1,0 +1,207 @@
+
+library(readxl)
+library(ggplot2)
+library(tidyverse)
+library(tidyr)
+library(data.table)
+library(dplyr)
+
+
+#PREVIAMENTE SE CREO UN ARCIVO CSV CON LOS DATOS DEL PIB EN PPP PARA 
+#LOS DATOS DE ARGENTINA, BRASIL, CHILE, MEXICO Y VENEZUELA, SE IMPORTA EL ARC
+fread("C:\\Users\\creep\\OneDrive\\Escritorio\\FMI_data.xls")
+data<-"C:\\Users\\creep\\OneDrive\\Escritorio\\FMI_data.xls"
+PPP<-fread(data)
+View(PPP)
+#####SE GRAFICAN TODOS LOS PIB EN PPP JUNTOS
+
+ggplot(data =PPP) + aes(x=year) +
+  geom_line(aes(y=Argentina, color="Argentina")) +
+  geom_line(aes(y=Brazil, color="Brazil")) +
+  geom_line(aes(y=Chile, color="Chile")) +
+  geom_line(aes(y=Mexico, color="Mexico")) +
+  geom_line(aes(y=Venezuela, color="Venezuela")) +
+  labs(title="PIB en PPP por País (2000-2023)", 
+       x="Año", y="PIB en PPP (trillones de USD)", colour="Paises") +
+  theme_minimal() +
+  scale_color_manual(values=c("red", "green", "blue", "orange", "purple")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+###1)RESPUESTA PODEMOS OBSERVAR QUE BRASIL HA TENIDO UNA TENDENCIA POSITIVA
+###Y MUY SIMIRAL AL DE MEXICO, PRSENTO UN AUGE EN CUANTO A LA TENDENCIA
+### EN 2007 HASTA 2013 RESPECTO A MEXICO, POSTERIORMENTE TUVO UNA CAIDA 
+### DESPUES DE 2018 PRESENTO UNA MAYOR SIMILITUD RESPECTO DE ESTE, 
+
+#### 2
+###PARA LA PREGUNTA 2 PREVIAMENTE SE REALIZO Y MODIFICO EL ARCHIVO CSV
+### QUE MUESTRA CRECIMIENTO PROMEDIO DEL PIB EN MONEDA NACIONAL PARA 2000 A 2023
+fread("D:\\analisis\\TASA DE CRECIMIENTO.csv")
+file.choose()
+data2<-"D:\\analisis\\PIB PAISES.csv"
+Tasa<-fread(data2)
+View(Tasa)
+
+
+### PARA LA SIMULACION DEL PIB EN CADA PAIS DESDE 2024 HASTA 2024 SE REALIZARON 
+### ALGUNAS ESTADISTICAS (MEDIA Y DESVIACION ESTANDAR)
+
+estadisticas <- Tasa %>%
+  select(-year) %>%
+  summarise_all(list(media = mean, sd = sd))
+
+#SE CREA LA SIMULACION
+set.seed(123)  # Fijar semilla para reproducibilidad
+anios_sim <- 2024:2040
+
+# GENERA DATOS PARA CADA PAIS
+simulacion <- data.frame(
+  year = anios_sim,
+  Argentina = rnorm(length(anios_sim), mean = estadisticas$Argentina_media, sd = estadisticas$Argentina_sd),
+  Brazil = rnorm(length(anios_sim), mean = estadisticas$Brazil_media, sd = estadisticas$Brazil_sd),
+  Chile = rnorm(length(anios_sim), mean = estadisticas$Chile_media, sd = estadisticas$Chile_sd),
+  Mexico = rnorm(length(anios_sim), mean = estadisticas$Mexico_media, sd = estadisticas$Mexico_sd),
+  Venezuela = rnorm(length(anios_sim), mean = estadisticas$Venezuela_media, sd = estadisticas$Venezuela_sd)
+)
+
+# COMBINAMOS LOS DATOS HISTORICOS CON LA SIMULACION
+datos_completos <- bind_rows(Tasa, simulacion)
+
+# GRAFICAMOS
+ggplot(datos_completos, aes(x = year)) +
+  geom_line(aes(y = Argentina, color = "Argentina")) +
+  geom_line(aes(y = Brazil, color = "Brasil")) +
+  geom_line(aes(y = Chile, color = "Chile")) +
+  geom_line(aes(y = Mexico, color = "México")) +
+  geom_line(aes(y = Venezuela, color = "Venezuela")) +
+  labs(title = "Proyección del PIB (2024-2040)",
+       y = "Tasa de Crecimiento (%)",
+       x = "Año") +
+  theme_minimal()
+
+####filtro solo desde 2024
+proyeccion <- datos_completos %>%
+  filter(year >= 2024)
+
+# Visualizar la proyección
+ggplot(proyeccion, aes(x = year)) +
+  geom_line(aes(y = Argentina, color = "Argentina")) +
+  geom_line(aes(y = Brazil, color = "Brasil")) +
+  geom_line(aes(y = Chile, color = "Chile")) +
+  geom_line(aes(y = Mexico, color = "México")) +
+  geom_line(aes(y = Venezuela, color = "Venezuela")) +
+  labs(title = "Proyección del PIB (2024-2040)",
+       y = "Tasa de Crecimiento (%)",
+       x = "Año", colour = "Paises") +
+  scale_color_manual(values=c("red", "green", "blue", "orange", "purple")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+theme_minimal()
+
+###PROYECCION MAS REALISTA(no me salio pero lo intente :( )
+install.packages("forecast")
+library(forecast)
+proyecciones <- list()
+
+for (pais in c("Argentina", "Brazil", "Chile", "Mexico", "Venezuela")) {
+  # Ajustar modelo ARIMA
+  modelo <- auto.arima(Tasa[[pais]])
+  
+  # Generar proyecciones
+  proyecciones[[pais]] <- forecast(modelo, h = length(2024:2040))$mean
+}
+
+# Crear un marco de datos con las proyecciones
+proyeccion_df <- data.frame(
+  year = 2024:2040,
+  Argentina = proyecciones$Argentina,
+  Brazil = proyecciones$Brazil,
+  Chile = proyecciones$Chile,
+  Mexico = proyecciones$Mexico,
+  Venezuela = proyecciones$Venezuela
+)
+
+# Visualizar la proyección
+ggplot(proyeccion_df, aes(x = year)) +
+  geom_line(aes(y = Argentina, color = "Argentina")) +
+  geom_line(aes(y = Brazil, color = "Brasil")) +
+  geom_line(aes(y = Chile, color = "Chile")) +
+  geom_line(aes(y = Mexico, color = "México")) +
+  geom_line(aes(y = Venezuela, color = "Venezuela")) +
+  labs(title = "Proyección del PIB con ARIMA (2024-2040)",
+       y = "Tasa de Crecimiento (%)",
+       x = "Año") +
+  scale_color_manual(values=c("red", "green", "blue", "orange", "purple")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+theme_minimal()
+
+
+#######
+# Ajustar modelo ETS para cada país y proyectar
+proyecciones_ets <- list()
+
+for (pais in c("Argentina", "Brazil", "Chile", "Mexico", "Venezuela")) {
+  # Ajustar modelo ETS
+  modelo_ets <- ets(Tasa[[pais]])
+  
+  # Generar proyecciones
+  proyecciones_ets[[pais]] <- forecast(modelo_ets, h = length(2024:2040))$mean
+}
+
+# Crear marco de datos con proyecciones ETS
+proyeccion_df_ets <- data.frame(
+  year = 2024:2040,
+  Argentina = proyecciones_ets$Argentina,
+  Brazil = proyecciones_ets$Brazil,
+  Chile = proyecciones_ets$Chile,
+  Mexico = proyecciones_ets$Mexico,
+  Venezuela = proyecciones_ets$Venezuela
+)
+
+# Visualizar la proyección
+ggplot(proyeccion_df_ets, aes(x = year)) +
+  geom_line(aes(y = Argentina, color = "Argentina")) +
+  geom_line(aes(y = Brazil, color = "Brasil")) +
+  geom_line(aes(y = Chile, color = "Chile")) +
+  geom_line(aes(y = Mexico, color = "México")) +
+  geom_line(aes(y = Venezuela, color = "Venezuela")) +
+  labs(title = "Proyección del PIB con ETS (2024-2040)",
+       y = "Tasa de Crecimiento (%)",
+       x = "Año") +
+  theme_minimal()
+
+
+###3
+### SE REALIZA EL CALCULO DE LA PARTICIPACION RELATIVA DE CADA PAIS RESPECTO DE 
+### EUA
+fread("D:\\analisis\\PART_RELATIVA.csv")
+file.choose()
+data3<-"D:\\analisis\\PART_RELATIVA.csv"
+RELATIVA<-fread(data3)
+View(RELATIVA)
+
+
+# Calcular la participación relativa de cada país respecto a Estados Unidos y multiplicar por 100
+datos_relativos <- RELATIVA %>%
+  mutate(
+    Argentina_rel = (Argentina / EUU) * 100,
+    Brazil_rel = (Brazil / EUU) * 100,
+    Chile_rel = (Chile / EUU) * 100,
+    Mexico_rel = (Mexico / EUU) * 100,
+    Venezuela_rel = (Venezuela / EUU) * 100
+  ) %>%
+  select(year, Argentina_rel, Brazil_rel, Chile_rel, Mexico_rel, Venezuela_rel)
+
+# Transformar los datos a formato largo para graficar
+datos_largos <- datos_relativos %>%
+  pivot_longer(cols = -year, names_to = "pais", values_to = "participacion")
+
+# Graficar la participación relativa
+ggplot(datos_largos, aes(x = year, y = participacion, color = pais)) +
+  geom_line(size = 0.5) +
+  labs(
+    title = "Participación Relativa con Respecto a Estados Unidos",
+    x = "Año",
+    y = "Participación Relativa (%)",
+    color = "País"
+  ) +
+  scale_color_manual(values=c("red", "green", "blue", "orange", "purple")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+theme_minimal()
