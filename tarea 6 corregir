@@ -1,0 +1,169 @@
+"Tarea 6"
+"Practica Final"
+
+################################################################################
+"Primer paso correr el codigo"
+#librerias
+library(tidyverse)
+library(caret)
+library(dplyr)
+library(ggplot2)
+
+# Crear un conjunto de datos de ejemplo
+set.seed(123)
+
+data <- data.frame(
+  id = 1:10000,
+  edad = sample(18:70, 10000, replace = TRUE),
+  ingresos = sample(1000:100000, 1000, replace = TRUE),
+  gasto = sample(1000:11000, 10000, replace = TRUE),
+  region = sample(c("Frontera Norte", "Zona Centro", "Golfo", "Pacífico"), 10000, replace = TRUE)
+)
+
+
+################################################################################
+# ver rango de datos, cantidad de variables que se pueden pedir , hay remplazo o no (si sale 10)
+
+View(data) #para ver la tabla anterioremente creada.
+
+"paso 1- filtrado de informacion clasificandola por gasto"
+
+#gasto alto si es mayor a 9,000.
+#gasto medio si esta entre 9,000 y 4000.
+#gasto bajo si es menor de 4000.
+# Crear una nueva tabla con la columna "gasto_alto"
+
+#Filtrado General / Clasificacion Gral de la tabla por gasto :
+
+Tabla <- data %>% mutate(
+  gasto_alto = ifelse(gasto >= 9000, "True", "False"),
+  gasto_medio = ifelse(gasto < 9000 & gasto >= 4000, "True", "False"),
+  gasto_bajo = ifelse(gasto < 4000 , "True", "False"))
+View(Tabla)
+
+Tabla1 <- data %>% mutate(tipo_de_gasto = case_when( 
+  gasto >= 9000 ~ "Gasto Alto",
+  gasto < 9000 & gasto >= 4000 ~ "Gasto medio",
+  gasto < 4000 ~ "Gasto bajo", 
+  TRUE ~ "N/A"
+))
+
+View(Tabla1)
+
+  tabla<-tabla %>% mutate(clasificaciones=case_when(
+    nota>=90 ~ "Excelente",
+    nota>=80 ~ "Bueno",
+    nota>=70 ~ "Mejorar",
+    TRUE ~ "Masomenos"))
+  
+
+#Tabla personalizada de cada valor 
+#vector de clasificacion de tabla por gasto alto
+
+gasto_alto<- data%>% filter(gasto>=9000, )
+gasto_alto <- gasto_alto %>% mutate(gasto_alto = "SI")
+View(gasto_alto)
+
+#vector de clasificacion de tabla por gasto medio
+gasto_medio<-data %>% filter(gasto<9000, gasto>=4000)
+gasto_medio <- gasto_medio %>% mutate( gasto_medio="SI")
+View(gasto_medio)
+
+#vector de clasificacion de tabla por gasto bajo.
+gasto_bajo<-data %>% filter(gasto<4000)
+gasto_bajo <- gasto_bajo %>% mutate(gasto_bajo="SI")
+View(gasto_bajo)
+
+################################################################################
+"paso 2 craer columna que ratio (gasto/ingreso)"
+Tabla<-Tabla %>% mutate(ratio_gasto_ingreso=(gasto/ingresos)*100)
+view(Tabla)
+
+#Tabla personalizada de cada valor 
+
+gasto_alto<-gasto_alto %>% mutate(ratio_gasto_ingreso=(gasto/ingresos)*100)
+view(gasto_alto)
+
+gasto_medio <- gasto_medio %>% mutate(ratio_gasto_ingreso = (gasto / ingresos) * 100)
+View(gasto_medio)
+
+gasto_bajo <- gasto_bajo%>% mutate(ratio_gasto_ingreso = (gasto / ingresos) * 100)
+View(gasto_bajo)
+
+################################################################################
+"paso 3 filtrar aqullos que su ratio>100 " 
+Tabla<-Tabla %>% filter(ratio_gasto_ingreso>100)
+View(Tabla)
+
+#Tabla personalizada de cada valor 
+
+gente_gastalona_a<-gasto_alto %>% filter(ratio_gasto_ingreso>100)
+view(gente_gastalona_a)
+
+gente_gastalona_m<-ratio_m %>% filter(ratio_gasto_ingreso>100)
+view(gente_gastalona_m)
+
+gente_gastalona_b<-ratio_b %>% filter(ratio_gasto_ingreso>100)
+view(gente_gastalona_b)
+
+################################################################################
+"paso 4 filtrar a los que se pueden clasificar como de gasto alto (mayor de 9000) "
+
+# Filtrar en el conjunto de "gente_gastalona" para ratios > 100 y gasto > 9000
+
+Tabla<-Tabla%>% filter(gasto > 9000)
+View(Tabla)
+
+################################################################################
+"paso 5 hacer una tabla que selecciona solamente (ingresos,  gastos, columna de clasificacion, ratio )"
+
+View(Tabla)
+
+#Tabla personalizada de cada valor 
+
+gasto_alto <- gente_gastalona_a %>% select(-id, -edad, -region)
+View(gasto_alto)
+
+gasto_medio <- gente_gastalona_m %>% select(-id, -edad, -region)
+View(gasto_medio)
+  
+gasto_bajo <- gente_gastalona_b %>% select(-id, -edad, -region)
+View(gasto_bajo)
+
+################################################################################
+"Paso 6 Graficar la dispersion de la relacion ingreso y gasto con titulos"
+
+Tabla$region<-NULL
+Tabla$edad<-NULL
+Tabla$id<-NULL
+
+plot(Tabla$ingresos, Tabla$gasto,
+     xlab="gasto",
+     ylab="ingresos",
+     main= "Grafica de disperson de ingreso y gasto de gasto gral",
+     col="green",)
+
+
+plot(gasto_alto$ingresos, gasto_alto$gasto,
+     xlab="gasto",
+     ylab="ingresos",
+     main= "Grafica de disperson de ingreso y gasto de gasto  alto",
+     col="blue",)
+
+plot(gasto_medio$ingresos, gasto_medio$gasto,
+     main= "Grafica de disperson de ingreso y gasto de gasto medio",
+     xlab="gasto",
+     ylab="ingresos",
+     col="red",)
+
+plot(gasto_bajo$ingresos, gasto_bajo$gasto,
+     main= "Grafica de disperson de ingreso y gasto de gasto bajo",
+     xlab="gasto",
+     ylab="ingresos",
+     col="brown",)
+
+################################################################################
+
+"7-modelo de regresion lineal donde y= ratio (dependiente), x= ingreso (independiente)"
+
+
