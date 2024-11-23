@@ -1,0 +1,182 @@
+#Coneval Ejericio
+
+#Indicadores de carencia social
+
+#Rezago educativo
+
+library(bit64)
+library(dplyr)
+library(data.table)
+
+#file.choose() muestra la ruta del archivo manualmente en la consola
+ruta<-("C:\\Users\\creep\\OneDrive\\Escritorio\\poblacion_csv\\poblacion.csv")
+razaed<-fread(ruta)
+View(razaed)
+
+#Opcional se genera una matriz de los datos.
+coneval<-matrix(razaed)
+coneval
+
+#nuevos indicadores: (|,!)
+#condicion logica: (|) condicion de uno u otro
+# el simbolo es una negacion (!) de un caracter, para quitar todo menos ese caracter buscado
+#Filtrar datos de trabajadores del hogar y huespedes
+coneval1<-datos %>% filter(!(parentesco>=400 & parentesco < 500 |
+                              parentesco>=700 & parentesco <800))
+
+# (~) simbolo equivalencia: condicional para buscar y remplazar / ALT + 126
+#filtrar datos quitando NA (!is.na)
+View(coneval1)
+
+################################################################################
+#clasificacion de datos de coneval / se usa mutate:
+
+#mutate para crear columnas nuevas
+coneval1<-coneval1 %>% mutate(
+  #crear columna año de nacimiento
+  año_e= case_when(!is.na(edad) ~ 2016-edad),)
+  #inasistencia escolar)
+
+View(tabla)
+View(rezaed)
+
+#para ver los valores de  la tabla y poder filtrar por codigos
+#2 es asiste / 1 no aiste
+
+
+#inasistencia escolar
+
+inas_esc= case_when(asis_esc == 1~0, #si asiste
+                    asis_esc == 2~1 ) #no asiste
+
+#nivel educativo
+nivel_ed = case_match(
+  #Primaria incompleta o menos / tiene la primaria clasificacion 2
+nivelaprob < 2 | (nivelaprob = 2 & gradoaprob < 6 ) ~ 0 , 
+  #primaria completa o secundaria incompleta
+(nivelaprob == 2 & gradoaprob  == 6 ) | nivelaprob == 3 & (nivelaprob == 3 & gradoaprob <3) ~ 1, 
+  #secundaria completa o secundaria incompleta
+(nivelaprob == 2 & gradoaprob  == 6 ) | nivelaprob == 4 & (nivelaprob == 3 & gradoaprob <3) ~ 1, 
+)
+
+
+################################################################################
+tabla<-data.frame(nombre = c("Ana", "Paty", "Pedro", "Juan"),    
+           nota = c(95, 82, 67, 73 ))
+
+"clasificacion de notas"
+tabla<-tabla %>% mutate (clasificaciones = case_when(
+  nota>=90 ~  "Excelente", nota>= 80 ~ "Bueno" , nota>= 70 ~ "Mejorar", 
+  RUE ~ "Mas o Menos"))
+
+
+################################################################################
+################################################################################
+##### Coneval Ejercicio
+#################################
+## Indicadores de carencia social 
+##################################
+##Rezago educativo 
+install.packages("data.table")
+install.packages("dplyr")
+install.packages("bit64")
+library(bit64)
+library(dplyr)
+library(data.table)
+
+file.choose()
+ruta<-"C:\\Users\\Usuario\\Downloads\\poblacion_csv\\poblacion.csv"
+rezaed<-fread(ruta)
+View(rezaed)
+
+## quitamos los trabajadores del hogar y huespedes
+rezaed<-rezaed %>% filter(!(parentesco>=400 & parentesco < 500 |
+                              parentesco >=700 & parentesco <800))
+
+rezaed<-rezaed %>% mutate( 
+  ##A?o de nacimiento 
+  anac_e=case_when(!is.na(edad) ~ 2016-edad))
+
+
+
+##### Coneval Ejercicio
+#################################
+## Indicadores de carencia social 
+##################################
+##Rezago educativo 
+install.packages("data.table")
+install.packages("dplyr")
+install.packages("bit64")
+library(bit64)
+library(dplyr)
+library(data.table)
+
+file.choose()
+ruta<-"C:\\Users\\Usuario\\Downloads\\poblacion_csv\\poblacion.csv"
+rezaed<-fread(ruta)
+View(rezaed)
+
+## quitamos los trabajadores del hogar y huespedes
+rezaed<-rezaed %>% filter(!(parentesco>=400 & parentesco < 500 |
+                              parentesco >=700 & parentesco <800))
+
+tabla<-data.frame(nombre=c("Ana", "Paty", "Pedro", "Juan"), 
+                  nota=c(95, 82, 67, 73))
+#clasificaci?n de notas
+tabla<-tabla %>% mutate(clasificaciones=case_when(
+  nota>=90 ~ "Excelente",
+  nota>=80 ~ "Bueno",
+  nota>=70 ~ "Mejorar",
+  TRUE ~ "Masomenos"))
+View(tabla)
+View(rezaed)
+rezaed$ni
+rezaed<-rezaed %>% mutate(
+  #A?o de nacimiento 
+  a?o_n=case_when(!is.na(edad)~ 2016 - edad),
+  #Inasistencia escolar 
+  inas_esc=case_when(asis_esc==1~0, #S? asiste
+                     asis_esc==2~1), #No asiste
+  #Nivel educativo 
+  nivel_ed=case_match(
+    #Primaria incompleta o menos
+    (nivelaprob<2) | (nivelaprob==2 & gradoaprob<6) ~ 0,
+    #Primaria completa o secundaria incompleta
+    (nivelaprob==2 & gradoaprob ==6 ) | (nivelaprob==3 & gradoaprob<3) ~ 1,
+    #Secundaria completa o media superior incompleta
+    (nivelaprob==3 & gradoaprob ==3) |
+      (nivelaprob==4 & gradoaprob<3) |
+      nivelaprob==6 & gradoaprob>=3 & inas_esc)
+  
+  
+)
+)
+
+###### paqueteria dplyr 
+#mutate filter
+
+library(dplyr)
+library(gapminder)
+
+tabla<-data.frame(gapminder)
+View(tabla)
+
+#para cambiar de nombre #(tabla)<-c("pais", "continente", "año", "espv", "poblacion")
+
+#select( ) #se puede anidar
+#tabla$country #se seleccona pero no se puede anidar
+tabla_seleccionar<-tabla %>% select(continent, year)
+tabla_seleccionar
+
+C1<-tabla %>% select(continent, year)%>% filter(year>1988)
+View(C1)
+
+C2<-C1 %>% arrange(continent)
+View(C2)
+
+################################################################################
+#Coneval medicion de temas sociales con respecto a la pobreza, del setor social del
+#pais.
+
+
+
