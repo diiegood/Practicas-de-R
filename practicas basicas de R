@@ -1,0 +1,162 @@
+####  induccion a R  #####
+
+#Se genera una secuencia de un vector de parametros -pi hasta pi, con una longitud de
+#la longitud es el #n datos del vector.
+
+x = seq(-pi, pi, len=70)
+x
+
+#para graficar  / forma de plotear en puntos con el comando (lty=)
+#xlim = c() | limite del eje x / ylim = X() |  limite del eje y
+
+plot(x,sin(x),
+     type = "l", ylim = c(-1.2,2),
+     xlim = c(-5,5), color= "red", lty=3 )
+
+#Para sobreponer graficas entre si. / graficas de bajo nivel se sobre ponen en algo existente
+#pch = es el tipo de punto que va ploetar
+
+"graficas de bajo nivel"
+
+points(x,cos(x), pch= 1 , col = 5 ) 
+
+lines(x,tan(x), type="p", lty=1, pch=4, col=6)
+
+#para poner un titulo en la grafica 
+title("Funciones trigonometricas aleatorias", cex.main = 2.1, col=2 )
+#para poner una guia o un indice dentro de la misma grafica, que indice cada funcion.
+legend(-5,2, c("Sin", "Cos", "Tan"), col=c(2,4,6), lty=c(2,1,NA), pch=c(NA, 4,6))
+
+################################################################################
+"Programacion en R"
+#comandos de expresion basicos #si se le pone el parentesis arroja inmediatamente 
+#el resultado de la operacion.
+x<-3
+x=3
+b= 3*3*3
+(x2=x*2)
+(y = x^2-15)
+(z=4*x+y^4)
+#para hacer 4 comandos en una sola linea / mostrando el resultado
+{patata = 15; b= 9e3*a+9; a; cos(b)}
+#tambien se puede expresar asi;
+{a = 1
+  b=3*63+9
+  a
+  cos(b)} #se puede guardar la expresion asi
+#solo da el ultimo resultado de la operacion
+{a = 1; b=3*63+9; a;cos(b)} 
+#hace el comando en cada valor independiente /mostrandolo en el enviroment individualmente
+a=8; b=3*5+9; s=tan(a)
+
+#Se pueden mezclar  / saltos de linea 
+{a = 8; b= 3*5 
+  a; tan(a)}
+
+#si el ultimo comando es de asignacion
+{a = 8; b=5*23+2
+  a; cos(b)
+  d= cos(b)}                      #no da resultados
+
+################################################################################
+"Operadores Logicos"
+
+x=7
+
+x<6       #preguntar si x es menor a 6
+x<=7      #preguntar si x es menor o igual a 7
+x>3       #preguntar si x es mayor a 3
+x>=8      #preguntar si x es mayor o igual a 8
+x == 3    #preguntar si x es igual a 3
+x != 10
+
+"Operaciones de vectores"
+
+a = 1:10
+
+a>5         #Preguntar para cada entrada
+
+a_cond = (a<6)
+a_cond            #muestra los valores que son inferiores a 6 dentro del vector a
+
+sum(a_cond)  #suma TRUE=1 y FALSE = 0   / 
+#Nos da el numero de valores menores a 6 en el vector a
+
+
+a[a_cond]  #devuelve los valores de a que cumplen la condicion de ser menores a 6
+
+
+##  combinacion de operadores logicos  ##
+
+a = 1:10
+
+#Pregunta si a es menor a 5 y mayor a 2
+#devuelve los valores que cumplen esas condiciones.
+
+condicional1 = a < 5 & a > 2  
+condicional1 #devuelve los valores que lo cumplen en string por posicion
+a[condicional1] #devuelve los valores en int o numerico que cumplen la condicion
+
+"&" #operador logico binario / se resuelve de forma binaria con 2 objetos solamente
+
+################################################################################
+
+"|" #para el condicional de datos que cumplan una condicion u otra 
+
+condicional2 = a < 3 | a > 8 
+condicional2
+a[condicional2] 
+################################################################################
+"Funcion  (if)"
+################################################################################
+
+"funcion rm" #(borra cosas)
+"funcion list=" #(especifica que cosas se desea borrar)
+"funcion ls()" #(para borrar una sublista dentro de una lista)
+"rm(list=ls())"   #Borrar todo el ambiente
+
+x<-c(5)
+if(x<9){y=9}   #devuelve la asignacion que es verdadera solamente
+               #si x es menor a y , guarda y igual a 9
+
+if(x>6){y=-1} #si x es mayor a 6, guarda y igual a -1 
+
+{a=9
+b=7
+b^2
+}
+
+################################################################################
+"Para pedir ayuda en R"
+#se escribe la funcion;      help("aqui va lo que quieres preguntar")
+help("if")
+
+#if condicion  o expresion
+
+x=c(2,5,6)
+x<7
+
+if(x<7){y=1}  "{y=1}"   #la condicion solo debe tener un unico resultado
+
+#Se pueden poner varias variables:
+
+#para correr el codigo se pone el cursor en medio de = = y se da en correr codigo
+if(a==9){
+  y=7
+  z=y^2                 #no da resultado
+  y=9
+}
+
+if(a==9){
+  y=7
+  z=y^2                #si da resultado al agregarse una y
+  y=9
+  y
+}
+
+################################################################################
+
+"condicion de la funcion if, puede ser directa TRUE o FALSE"
+
+d = (b==7)
+
