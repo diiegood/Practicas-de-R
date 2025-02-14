@@ -159,4 +159,93 @@ if(a==9){
 "condicion de la funcion if, puede ser directa TRUE o FALSE"
 
 d = (b==7)
+if(d){y=-3}
 
+"else; que hacer en caso de false"  #ayuda a cubrir diferentes situaciones sobre la variable
+
+if(a<7){          #si x es menor a 7
+  x = 6           #entonces haz x igual a 6
+} else {          # si no pasa que es menor a 7
+  x = 7           # entonces haz x igual a 7
+}
+
+if(a<7){x=5}else{x=8}   #deben estar en el mismo renglon para que funcione esta expresion
+
+#o tambien es valido de esta forma
+
+if(a<7) x=6 else x=1  #tambien se pueden quitar los corchetes
+
+#Pero hay una funcion que hace algo asi:
+variable_condicional = ifelse(a<7,6,1)
+variable_condicional2 = ifelse(a<7,6,7)
+
+################################################################################
+"Tambien hay asignaciones"
+ifelse(a<8,y=3,y=6) #MAL ESCRITO / NO FUNCIONA
+
+################################################################################
+"Ciclos"
+################################################################################
+
+"for"   #permite hacer una tarea variando un indice
+
+#esta funcion nos permite hacer una tarea variando de un indice
+
+2^2
+4^2
+6^2
+8^2
+10^2
+
+#para escribir los primeros 10 o 20 numeros cuadrados en numeros pares:
+ind= 1:10
+ind^2
+cuadrados_primeros10_numeros_pares=(2*ind)^2
+
+#otra forma de poder hacerlo
+
+for(i in 1:10){
+  print((2*i)^2)
+}
+
+#como funciona el for /  for (indice in vector_indice){ tarea_ciclo = expresion}
+
+for (i in 2:52){
+  print((1+i)^3)
+}
+
+#se busca crear la siguiente funcion con un ciclo
+#x = (x1,x2,x3,x4) --> y = (x1,x1+x2,x2+x3,x3+x4)
+"primero se crea la variable con el termino del vector"
+
+x = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18)
+n=length(x)
+x3= 1:1000 #se genera una lista en la funcion x3
+n= length(x3) #numero de valores de la funcion x3
+n
+
+#primer entrada de y=a x1
+y = c(x[1]) #se crea una entrada de un vector llamado y con el vector de x
+for (i in 2:n ){
+  y[i] = x[i-1]+ x[i] #con esto define las siguientes entradas de y
+}
+
+#Si el vector x es grande: / se puede usar para hacer una tabla de amortizacion
+
+y = c(x3[1])
+for (i in 2:n){
+  y[i] = x3[i-1] + x3[i]
+}
+y
+
+#crea la variable del indice: i
+#no necesariamente nos da el resultado (solo cuando se llama la funcion)
+
+#Usando un ciclo para poder resolver:
+"Sucesion de Fibonacci"
+
+#1,1,2,3,5,8,13
+#y[n] = y[n-1] + y[n-2]
+
+
+#parte del video 25:16
