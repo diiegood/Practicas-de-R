@@ -240,12 +240,143 @@ y
 
 #crea la variable del indice: i
 #no necesariamente nos da el resultado (solo cuando se llama la funcion)
-
+################################################################################
+"Ciclos"
+################################################################################
 #Usando un ciclo para poder resolver:
 "Sucesion de Fibonacci"
 
 #1,1,2,3,5,8,13
 #y[n] = y[n-1] + y[n-2]
 
+n= 20  #numero de elementos de la sucesion
+y= c(1,1)  #se ponen los dos primeros elementos, sobre estos se suma
+for(j in 3:n ) {  #aqui se pone el ciclo de donde iria
+  y[j]= y[j-1] + y[j-2]
+}
 
-#parte del video 25:16
+y
+
+"Se puede hacer la n para queramos":
+
+n= 50  #numero de elementos de la sucesion
+z= c(1,1)  #se ponen los dos primeros elementos, sobre estos se suma
+for(j in 3:n ) {  #aqui se pone el ciclo de donde iria
+  z[j]= z[j-1] + z[j-2]
+}
+
+z
+  
+#Otro ejemplo de algo que si necesite el ciclo:
+#suma de armonica:  1 + (1/2) + (1/3) + (1/4) + ... + (1/n) =
+
+n = 10000
+suma = 0
+for (h in 1:n){
+  suma = suma +(1/h)
+}
+
+suma
+
+################################################################################
+#Funcion while
+#Esta funcion realiza la tarea mientras se cumpla una condicion.
+#realiza la tarea cuantas veces sea necesario mientras se cumpla esta condicion
+#while(condicion){expresion}
+
+#Vamos a mostrar numeros hasta pasa una cota
+
+x = 0
+cota = 9
+                              #El ciclo podria no terminar con este comando:
+while(x < 9){                    #imprimiendo casas eternamente, nunca va tener una detencion
+  print(x)
+  x = x+1
+}
+
+################################################################################
+#un ciclo eterno de iteraciones infinitas que no tienen un freno.
+x = 0
+cota = 9
+
+while (x<9){            #un ciclo eterno , que no se concreta tienen problemas
+  print(x)               #genera un problema que en el ambiente aparece un cero, 
+  x = x-1               # pero si le preguntas te da el ultimo valor de la iteracion.
+}  
+
+x
+
+#para salir del ciclo se pone una condicion. / en este caso la condicion if
+
+x=0
+cota = 9
+nite = 0  # numero de iteraciones realizadas
+while(x < 9){
+  print(x) 
+  x = x-1
+  nite = nite + 1 
+  if(nite == 201) {break}  #condicional de que 100 ciclos se detiene y la funcion break es para deternelos
+}
+
+################################################################################
+"Funciones"
+
+#se crean las funciones propias
+#Nombre_funcion = function(parametros){expresion}
+
+#Ejemplo 1:
+area_rectangulo = function(base,altura){base * altura}
+
+#nombre de la funcion = comando function (inputs){calculo de la funcion}
+
+area_rectangulo(2,9) #puede tener errores porque calcula pero no tiene restricciones
+
+#Validacion de los datos / if condiciona bajo que parametros sale el mensaje cat
+#cat sirve para poner un string sobre una informacion si arroja cierto valor
+#  return sirve para regresar los datos de la funcion si se cumple otra condicon
+
+area_rectangulo2 = function(base,altura){
+  if(base < 0 | altura < 0 ) {    #condiciona que no sea menor a 0 y los vectores por longitud
+    cat("Error : no seas wey, no hay dimensiones negativas ")
+  }
+  else { 
+    return (base *  altura)
+    }  
+}
+
+area_rectangulo2(-1,2)  #arroja error con mensaje
+area_rectangulo2(1,3)  #arroja resultado
+area_rectangulo2("a",1)  #arroja error por default de R
+area_rectangulo2(c(2,3),8) #arroja error por la condicion dada en el if
+
+#Las funciones "is algo":
+
+#vector de 1 entrada
+is.numeric(h)  #valida con valores boleanos si es un numero la variable
+
+is.vector(h) #valida con valores boleanos si es un vector la variable
+
+################################################################################
+
+area_rectangulo3 = function(base, altura){
+  if (length(base)>=2  |  length(altura)>=2){
+    cat("Error vector detectado")}
+  else{
+    if(base<0|altura<0){cat ("Error dimensiones negativas")
+  }
+  else { return(base*altura)}}
+}
+
+area_rectangulo3(2,-5)
+area_rectangulo3(-4,5)
+area_rectangulo3(c(6,2),3)
+area_rectangulo3(0,5)
+
+#nota 
+#variables dentro de una funcion solo son locales, solo existen mientras la funcion se lleva acabo
+#despues desaparecen al terminar la funcion
+#si se definen variables dentro de la funcion solo seran locales, de esa funcion 
+#codigo return puede regresar cualquier cosa, vectores, matrices, listas, operaciones, funciones
+
+
+
