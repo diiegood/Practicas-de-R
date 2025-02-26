@@ -1,0 +1,206 @@
+#Traiding Cuantitativo : Modelo Garch para estimacion de Volatilidad.
+
+"Portafolio de inversion de minima varianza, esto se refiere a que se enfoca en
+minimizar los riesgos en la inversion, mientras maximiza la ganancia"
+
+"Osea que quiere tomar el mayor beneficio con el menor riesgo, buscando el nivel de
+riesgo mas bajo posible, buscando reducir el nivel de volatilidad, ya que los inversores
+buscan minimizar los riesgos(volatilidad)"
+
+#Creacion de portafolio de minima varianza, se busca que sea baja la volatilidad 
+#inversiones de baja correlacion son inversiones que no son similares, por lo que
+#no tienen el mismo rendimiento, especialmente en el mismo rendimeinto, si se encuentran
+#en el mismo entorno economico o mercado.
+
+"Bonos o fondos son ejemplos de carteras con varianza minima, por que lo precios de bonos
+tienen a ser negativos, cuando los precios de las acciones van al alza".
+
+
+#Criticas del modelo, la variabilidad de las series financieras no son contastantes, 
+#en el tiempo, no es constante la volatilidad, ya que varia demasiado inclusive en 1 dia
+
+#Modelo Garch intenta modelizar la variabilidad de la serie financiera, en comparacion
+#Markowitz no lo tiene en cuenta, asumiendo la volatilidad de manera no constante.
+
+#Cambios en la volatilidad--> Heterocedasticidad: 
+#Por eso se nombran auto-regresivos de heterocedasticidad
+
+#La heterocedasticidad es un patron de variacion en los residuos, de un modelo estadistico
+#donde la varianza no es constante, ya que la dispersion de los residuos es desigual.
+
+
+#Con el garch estudiando el pasado de la serie financiera (volatilidad)  se busca, 
+#calcular el valor futuro. 
+
+#cartera de divisas de GARCH
+if (!requireNamespace("quantmod", quietly = TRUE)) {
+  install.packages("quantmod")}
+
+
+"instalar paqueteria"
+#install.packages("quantmod")
+library(quantmod)
+
+getFX(c("MXN/SEK", "MXN/EUR", "MXN/USD", "GBP/USD", "USD/CHF", "USD/CAD",
+        "USD/JPY", "MXN/JPY"))
+
+#Calculo de Retornos Logaritmicos.
+
+MXN<-na.omit(diff(log(MXNUSD)))
+MXNS<-na.omit(diff(log(MXNSEK)))
+MXNE<-na.omit(diff(log(MXNEUR)))
+MXNJ<-na.omit(diff(log(MXNJPY)))
+GBP<-na.omit(diff(log(GBPUSD)))
+USDCH<-na.omit(diff(log(USDCHF)))
+USDC<-na.omit(diff(log(USDCAD)))
+USDJ<-na.omit(diff(log(USDJPY)))
+
+
+#graficos 
+
+#install.packages("fBasics")
+library(fBasics)
+
+skewness(MXN) #para poder medir la asimetria de la divisa mexicana
+
+#se cargan histogramas de las matrices / con esto vemos la distribucion si se 
+#aleja de la normal o tiene otro comportamiento, para poder modelar la serie.
+
+
+hist(MXN,breaks = 20)
+hist(MXNS,breaks = 20)
+hist(MXNE,breaks = 20)
+hist(MXNJ, breaks= 20)
+hist(GBP, breaks= 20)
+hist(USDCH, breaks= 20)
+hist(USDC, breaks= 20)
+hist(USDJ, breaks= 20)
+
+#modelar la serie / con el modelo GARCH
+#install.packages("fGarch")
+"al usar el modelado del garchFit o garch, se incluyen diversos componentes como:"
+#coeficiente estimado
+#desviacion estandar condicional (sigma t)
+#residuos estandarizados(residuos)
+
+"simbolos / @ es para el objeto / $ es para acceder al data.frame"
+
+library(fGarch)
+#cond.dist "norm" (para la distribucion normal)
+#cond.dist "sstd" (para la distribucion student)
+
+MXN.garch <-garchFit(~garch(1,1), MXN, cond.dist = "norm", trace = FALSE)
+MXNS.garch <-garchFit(~garch(1,1), MXNS, cond.dist = "norm", trace = FALSE)
+MXNE.garch <-garchFit(~garch(1,1), MXNE, cond.dist = "norm", trace = FALSE)
+MXNJ.garch <-garchFit(~garch(1,1), MXNJ, cond.dist = "norm", trace = FALSE)
+GBP.garch <-garchFit(~garch(1,1), GBP, cond.dist = "norm", trace = FALSE)
+USDCH.garch <-garchFit(~garch(1,1), USDCH, cond.dist = "norm", trace = FALSE)
+USDC.garch <-garchFit(~garch(1,1), USDC, cond.dist = "norm", trace = FALSE)
+USDJ.garch <-garchFit(~garch(1,1), USDJ, cond.dist = "norm", trace = FALSE)
+
+#"Correcion"
+#MXN.garch <- garchFit(formula = ~ garch(1, 1), data = MXN, cond.dist 
+                      #= "norm", trace = FALSE)
+
+#MXNS.garch <- garchFit(formula = ~ garch(1, 1), data = MXNS, cond.dist 
+                      #= "norm", trace = FALSE)
+
+#Standarization :
+#el valor de la serie partido desde la desviacion estandar, pero la
+#que se obtuvo con la modelizacion del garch (garch modela la volatilidad de la serie)
+#se busca que la serie sea mas estandar desde el punto de vista de la volatilidad
+"se calcula la volatilidad de forma diferente y no con la desviacion tipica normal"
+
+
+"simbolo @" #sirve para poder acceder a slots del objeto o tambien para extraer 
+#ciertos componentes o atributos de los objetos definidos bajo esa clase,
+#en este caso se nombro en la paqueteria garch, por lo que es para extraerlo de ahi
+
+
+MXN.stand <- MXN / MXN.garch@sigma.t
+MXNS.stand <-MXNS / MXNS.garch@sigma.t
+MXNE.stand <-MXNE / MXNE.garch@sigma.t
+MXNJ.stand <-MXNJ /MXNJ.garch@sigma.t
+GBP.stand <-GBP /GBP.garch@sigma.t
+USDCH.stand <-USDCH /USDCH.garch@sigma.t
+USDC.stand <-USDC /USDC.garch@sigma.t
+USDJ.stand <-USDJ /USDJ.garch@sigma.t
+
+#Calculo de correlaciones y covarianzas.
+
+
+correlacion <- cor(cbind(MXN.stand, MXNS.stand, MXNE.stand, MXNJ.stand, GBP.stand,
+                         USDCH.stand, USDC.stand, USDJ.stand))
+correlacion
+
+covarianza <- cov(cbind(MXN.stand, MXNS.stand, MXNE.stand, MXNJ.stand, GBP.stand,
+                         USDCH.stand, USDC.stand, USDJ.stand))
+covarianza 
+
+#Se calcula la covarianza condicional para poder hacer la diagonal de la matriz
+"Buscando la construccion de la matriz de covarianzas con modelos garch"
+
+sig1 <- predict(MXN.garch, n.ahead = 1)[["standardDeviation"]]
+sig2 <- predict(MXNE.garch, n.ahead = 1)[["standardDeviation"]]
+sig3 <- predict(MXNS.garch, n.ahead = 1)[["standardDeviation"]]
+sig4 <- predict(MXNJ.garch, n.ahead = 1)[["standardDeviation"]]
+sig5 <- predict(GBP.garch, n.ahead = 1)[["standardDeviation"]]
+sig6 <- predict(USDCH.garch, n.ahead = 1)[["standardDeviation"]]
+sig7 <- predict(USDC.garch, n.ahead = 1)[["standardDeviation"]]
+sig8 <- predict(USDJ.garch, n.ahead = 1)[["standardDeviation"]]
+
+D<-diag(c(sig1,sig2,sig3,sig4,sig5,sig6,sig7,sig8))  #diagonal de la matriz
+D
+
+(Cov_t<-D %*% correlacion %*% D)
+"Operador  %*%" #significa que es una multiplicacion matricial.
+
+#se realiza el calculo de los retornos de los activos y se saca la media 
+retornos<- cbind(MXN,MXNE,MXNS,MXNJ,GBP,USDCH,USDC,USDJ)
+retornos1<-apply(retornos,2,mean)
+retornos1
+
+#Funcion Solve para construir carteras , portafolios de optimizacion, para el solve
+#es como el solver se debe poner mal los parametros.
+
+#solve.QP (Omat, dvec, amat, byec, iteq=0, factor12ed = FALSE) 
+"Esto se refiere a que "
+
+dat.ret<-retornos
+dim(dat.ret)
+
+head(dat.ret, 3)
+parametro_riesgo <- 0   #para el portafolio de minima varianza
+Dmat<-Cov_t
+
+dvec<-colMeans(dat.ret) * parametro_riesgo
+dvec
+
+#constrains; sun(x_i) ~ i #son las restricciones, que la sumatoria de todos los weigths sea 1.
+
+Amat <- matrix(1,nrow = nrow(Dmat))
+Amat
+
+bvec <- 1
+meq <-1 
+
+
+library(quadprog) "solve funciona como el solver de excel"
+#para poder obtener los weigths del portafolio  
+qp<-solve.QP(Dmat,dvec,Amat,bvec,meq)
+qp$solution
+
+x<- qp$solution
+x
+
+mu_p<-colMeans(dat.ret)%*% x #media del portafolio (rendimeinto esperado)
+Media_p<-mu_p * 100
+Media_p
+
+sd_p <-sqrt(x %*% Cov_t %*% x) #portafolio desviacion estandar (volatilidad esperada / riesgo)
+desviacion_std<-sd_p* 100
+desviacion_std
+
+
+
+
