@@ -1,0 +1,58 @@
+library(readxl)   # Para leer archivos de Excel
+library(tseries)  # Para trabajar con series de tiempo
+library(forecast) # Para la media móvil y análisis de series temporales
+library(ggplot2)  # Para visualización
+library(dplyr)    # Para manipulación de datos
+
+setwd("C:/Users/Laptop/Desktop/Universidad/Octavo/Series")
+
+# Cargar los datos desde el archivo Excel
+data <- read_excel("Petroleo.xlsx")
+
+# Convertir los datos a serie de tiempo
+ts_data <- ts(as.numeric(unlist(data[[1]])), start = c(1977, 1), frequency = 12)
+
+# Calcular las primeras diferencias
+ts_diff1 <- diff(ts_data, differences = 1)
+ts_diff2 <- diff(ts_data, differences = 2)
+ts_seasonal_diff <- diff(ts_data, lag = 12, differences = 1)  # Diferencia estacional
+
+# Crear lista para almacenar series y varianzas
+series_diff <- list()
+varianzas <- numeric()
+combinaciones <- character()
+
+# Iterar sobre todas las combinaciones de diferencias simples y estacionales
+for (d in 0:3) {
+  ts_temp <- ts_data  # Inicializar con la serie original
+  
+  # Aplicar diferencias simples
+  if (d > 0) {
+    ts_temp <- diff(ts_temp, differences = d)
+  }
+  
+  for (ds in 0:3) {
+    ts_final <- ts_temp  # Copia para aplicar diferencias estacionales
+    
+    # Aplicar diferencias estacionales
+    if (ds > 0) {
+      ts_final <- diff(ts_final, lag = 12, differences = ds)
+    }
+    
+    key <- paste0("d", d, "_ds", ds)
+    
+    # Almacenar serie y calcular varianza
+    series_diff[[key]] <- ts_final
+    varianzas <- c(varianzas, var(ts_final, na.rm = TRUE))
+    combinaciones <- c(combinaciones, key)
+  }
+}
+
+# Encontrar la combinación con varianza mínima
+min_var_index <- which.min(varianzas)
+min_var_combination <- combinaciones[min_var_index]
+min_var_value <- varianzas[min_var_index]
+
+# Imprimir varianzas y la combinación con varianza mínima
+print(varianzas)
+print(paste("Combinación con varianza mínima:", min_var_combination, "con varianza", min_var_value))
