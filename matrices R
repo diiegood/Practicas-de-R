@@ -1,0 +1,27 @@
+library(tidyverse) #para el comando select en R (uso de select)
+library(dplyr)
+x<-"C:\\Users\\creep\\OneDrive\\Escritorio\\programacion\\x.csv"
+ruta<-"C:\\Users\\creep\\OneDrive\\Escritorio\\programacion\\Xpbt.csv"
+file.exists(ruta)
+x<-read.csv(x)
+tabla<-read.csv(ruta) #para ver el archivo con los datos.
+View(tabla) #para ver la tabla
+
+tabla_sector<-substr(tabla$Sector, 6,7) #para extraer la columna del sector de la tabla.
+#son 6 posiciones antes / que considere solo 2 sectores (7)
+
+tabla1<-tabla %>% select(-Sector) #se selecciona toda la tabla borrando la columna sector
+tabla1
+View(tabla1)
+
+colnames(tabla1)<-"practica1" #para renombrar la tabla como practica 1
+
+Practica <-diag(tabla1$practica1) #se genera una matriz con los datos. 20x20
+Practica
+
+colnames(Practica)<- rownames(x)
+row.names(Practica)<- rownames(x)
+
+################################################################################
+
+#para hacer diagonal la matriz
