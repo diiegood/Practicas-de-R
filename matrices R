@@ -1,9 +1,125 @@
+#practica asignar operaciones con vectores:
+#principios basicos de R / matrices, vectores y operadores logicos.
+
+#vector simple de a
+a<-c(1,2,3,4,5,6)
+
+#vector de boleanos
+boleanos <-c(T,F,T,T)
+
+#vector con strings
+c<-c("Ciudad de Mexico", "Guadalajara", "Chiapas", "Cancun")
+
+#genera un vector de numeros del 2 al 29
+secuencia<-seq(2,30) 
+secuencia
+
+#genera una repeticion de 5 veces el valor de la izquierda
+repeticion<-rep(2,5)
+repeticion
+
+################################################################################
+
+#primera matriz construida con valores secuenciales
+#nrow son las filas / ncol son las columnas 
+matriz <-matrix(c(1,2,3,4,5,6,7,8,9,10,11,12),nrow=3,ncol=4)
+matriz
+
+X<-read.csv("ubicacion del archivo .terminacion del archivo")
+#Ejemplo:
+X<-read.csv("X.csv")
+
+################################################################################
+#practica autodidacta 
+
+#para nombrar filas de una matriz
+row.names(x)<-x$Sector
+
+#para eliminar nombres de la matriz / select es para seleccionar.
+#se pone el nombre de la matriz, la fila que se desea borar con signo negativo
+x<-select(x, -Sector)
+
+#para ver el formato de la base de datos
+class(matriz) #dice que esta guardada como un array 
+
+#para convertirla en una matriz
+matriz<-as.matrix(matriz)
+matriz
+
+################################################################################
+
+dim(matriz) #da el tamaño de la matriz.
+
+numero_filas<-nrow(matriz)#para ver las filas de la matriz
+numero_filas
+
+numero_columnas<-ncol(matriz) #para ver las columnas de la matriz
+numero_columnas
+
+
+################################################################################
+"Operadores Logicos nomneclatura"
+
+#1 dim()            para ver el tamaño de la matriz
+#2 nrow()           para ver el tamaño de las filas de la matriz
+#3 ncol()           para ver el tamaño de las columnas de la matriz
+#diag()             para ver la diagnolad de la matriz
+# *                 multiplicador de elemento
+# %*%               producto matricial
+# %o%               producto exterior
+# %x%     producto de Kronecker / opearcion sobre dos matrices de tamaño arbitrario
+# cbind             para agragar filas 
+# rbind()           para agregar columnas
+# t()               para poner matriz transpuesta
+# solve()           para poner inversa la matriz de A
+# solve(A,b)        para poner la solucion de la matriz A
+# eigen()           autovalores y autovectores
+# qr()              Descomposicion QR 
+# chol()            Descomposicion de Cholesky
+# svd()             Descompisicion singular
+
+################################################################################
+#primera base de datos / Manipulacion de bases de datos en R
+
 library(tidyverse) #para el comando select en R (uso de select)
 library(dplyr)
 x<-"C:\\Users\\creep\\OneDrive\\Escritorio\\programacion\\x.csv"
-ruta<-"C:\\Users\\creep\\OneDrive\\Escritorio\\programacion\\Xpbt.csv"
-file.exists(ruta)
 x<-read.csv(x)
+file.exists(x)
+
+################################################################################
+"Intro seleccion de variables"
+
+#seleccion de los datos Sector del conjunto de datos x
+sectores<-x$Sector  #para seleccionar la variable sector de la base de datos
+sectores   #se convierte en un vector la variable Sector
+
+#seleccion de un conjunto de datos los primeros datos del 1:10
+seleccion_de_filas<-x[1:10,]  #seecciona los primeros 10 datos (desde la fila 1 a la 10)
+seleccion_de_filas
+
+#seleccion de variables 11 variable de la fila 2
+valores<-x[2,11] # 2 representa la fila y 11 la columna, nos da el valor de esa posicion
+valores
+
+#seleccionar toda el vector en conjunto
+valores1<-x[,3] #selecciona toda la tercera columna
+valores1
+
+#seleccion de valores especificos en una columna
+conjunto_datos<-x[1:3,"Sector"] #seleccion de los primeros 3 datos de la columna de Sector
+conjunto_datos
+
+"Seleccionar con comando select" #select(base_de_datos,variable1, variable2,etc)
+
+funcion_Select<-select(x,C11,C21) #selecciona 2 columnas de la base de datos x
+funcion_Select
+
+################################################################################
+"Practica"
+
+ruta<-"C:\\Users\\creep\\OneDrive\\Escritorio\\programacion\\Xpbt.csv"
+file.exists(ruta) 
 tabla<-read.csv(ruta) #para ver el archivo con los datos.
 View(tabla) #para ver la tabla
 
