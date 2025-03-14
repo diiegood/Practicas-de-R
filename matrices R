@@ -25,7 +25,7 @@ repeticion
 matriz <-matrix(c(1,2,3,4,5,6,7,8,9,10,11,12),nrow=3,ncol=4)
 matriz
 
-X<-read.csv("ubicacion del archivo .terminacion del archivo")
+"X<-read.csv("ubicacion del archivo .terminacion del archivo")"
 #Ejemplo:
 X<-read.csv("X.csv")
 
@@ -81,11 +81,14 @@ numero_columnas
 ################################################################################
 #primera base de datos / Manipulacion de bases de datos en R
 
+#librerias:
 library(tidyverse) #para el comando select en R (uso de select)
 library(dplyr)
+
+
 x<-"C:\\Users\\creep\\OneDrive\\Escritorio\\programacion\\x.csv"
 x<-read.csv(x)
-file.exists(x)
+
 
 ################################################################################
 "Intro seleccion de variables"
@@ -139,5 +142,44 @@ colnames(Practica)<- rownames(x)
 row.names(Practica)<- rownames(x)
 
 ################################################################################
+"Matrices" #operaciones con matrices
+#para hacer diagonal la matriz 
+#funcion cbind / para unir columnas de una matriz o vector
+#funcion rbind / es para unir filas de una matriz o de un vector
+#traspuesta / funcion que sirve para trasponer cambiar un vector o una matriz
 
-#para hacer diagonal la matriz
+Matriz_traspuesta<-t(x) #trasponer el vector
+Matriz_traspuesta
+
+#Union de matriz cuadrada con el vector 
+
+operacion_matricial<-cbind(x,Practica) #se une una columna 
+operacion_matricial
+
+operacion_matricial2<-rbind(x$Sector, matriz ) #se une una fila especifia llamada sector de x a matriz
+operacion_matricial2
+
+#acceder a un conjunto de datos de una matriz / filas y columnas:
+
+fila_de_x<-x[2,]  #se muestra la segunda fila de la matriz x
+fila_de_x
+
+columna_de_x<-x[,2] #se muestra la segunda columna
+columna_de_x
+
+#para solo indicar un valor especifico
+valor_especifico<-x[2,3] #se muestra el valor que ocupa la posicion de:
+#la segunda fila y la tercer columna
+valor_especifico
+
+
+#para un subconjunto dentro de la matriz:
+subconjunto_matricial<-x[1:2,1:5] #muestra un subconjunto de la matriz dentro de ese espacio
+subconjunto_matricial
+
+################################################################################
+"Multiplicacion de Matrices"
+
+
+
+
