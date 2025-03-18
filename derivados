@@ -1,0 +1,79 @@
+install.packages('data.table', type = 'source')
+install.packages('httr')
+install.packages('XML')
+library(httr)
+library(XML)
+library(data.table)
+set_config(config(ssl_verifypeer = 0L))
+setwd("S:/Cobertura petroleraBrent Futures")
+
+## Descargar datos del Moore Research Center, Inc.
+
+## MRCI te da las tablas de manera ordenada por fecha, de manera que aqui vamos a descargar los futuros del Brent de 2008 a 2017
+"%not in%" <- function(x, table) !match(x, table, nomatch = 0) > 0
+
+# El primer paso es crear fechas, aqui crearemos cosas inutiles como 31 de Febrero de 2009. Esto se limpia despues
+y <- 2020
+m <- formatC(c(07:09), width = 2, flag = 0)
+d <- formatC(c(1:31), width = 2, flag = 0)
+
+fechas <- c()
+
+for(i in 1:length(m)) {
+fechas <- c(fechas, paste0(m[i], "/", d))
+}
+
+
+dates <- c()
+for (i in 1:length(y)){
+  
+  dates <- c(dates, paste0(y[i], "/", fechas))
+  
+}
+
+## En este paso se limpian las fechas que no sirven, como el 31 de Febrero de 2009 (se convierten en NA en automatico)
+dates <- as.Date(dates, "%Y/%m/%d")
+dates <- dates[!is.na(dates)]
+
+
+## Los mercados financieros no reportan en sabado y domingo, asi que los borramos
+dates <- dates[weekdays(dates) %not in% c("saturday", "sunday")]  ## Si weekdays regresa saturday y sunday, entonces cambiar por esos strings 
+
+dates <- format.Date(dates, "%y%m%d") ## el formato de mrci.com es, por ejemplo, 111220 para el 20 de diciembre de 2011
+dates
+
+## este loop se detendra cada vez que cambiemos de ano. El cambio lo haremos manual en la URL y continuaremos con una j que va desde
+## el punto donde nos detuvimos en adelante.
+  for ( j in 1:length(dates)) {
+derivados <- paste("https://www.mrci.com/ohlc/2020/", dates[j],".php")
+    derivados.table = readHTMLTable(rawToChar(GET(derivados)$content), header=T, colClasses = m, stringsAsFactors=F)
+    brent <- derivados.table[which(derivados.table[,1] %in% "Brent Crude Oil(ICE)"):(which(derivados.table[,1] %in% "Brent Crude Oil(ICE)")+15), ]
+  
+    assign(paste0("brent", j), brent)
+  }
+
+
+derivados.table = readHTMLTable("http://www.mrci.com/ohlc/2022/220901.php", header=T, which=1, stringsAsFactors=F)
+### Escribir y concluir con un buen archivo .txt
+
+petroleo <- data.frame()
+
+for (i in 1:92) {
+  
+  petroleo <- rbind(petroleo, get0(paste0("brent",i)))
+  
+}
+
+nombres <- c("Mth",	"Date",	"Open",	"High",	"Low",	"Close",	"Change",	"Volume",	"Open Int",	"Change")
+colnames(petroleo) <- nombres
+oil2 <- as.data.table(petroleo)
+oil2 <- oil2[!grepl("brent", Mth, ignore.case = T), ]
+oil2 <- oil2[!grepl("total", Mth, ignore.case = T), ]
+
+setwd("S:\Cobertura petrolera\Brent Futures")
+
+fwrite(oil2, "petroleo2021II.txt")
+
+
+## Listo!!
+
