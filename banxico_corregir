@@ -1,0 +1,131 @@
+################################################################################
+"Codigo Petroleo Brent"
+
+#librerias originales
+library(httr) #libreria para cargar datos de la web
+library(XML)
+library(data.table)
+
+# Cargar librerías
+#install.packages("RCurl")  #remplazo de httr
+library(RCurl)
+
+#install.packages("xml2") #remplazo de XML
+library(xml2)
+
+#install.packages("dplyr") #remplazo de data.table / opcion A
+library(dplyr)
+
+#install.packages("readr") #remplazo de data.table / opcion B
+library(readr)
+
+#install.packages("rvest")
+library(rvest)
+
+
+# Configuración SSL
+set_config(config(ssl_verifypeer = 0L))
+
+# Definir la URL a la que te quieres conectar
+direccion_web <- "https://www.mrci.com/ohlc/ohlc-06.php"  # Reemplaza con la URL que deseas consultar
+page <- read_html(direccion_web)
+page
+
+# Buscar la tabla de interés (esto depende de la estructura de la página)
+tabla <- page %>% 
+  html_node("table") %>%   # Puede ser necesario ajustar el selector si hay varias tablas
+  html_table(fill = TRUE)
+
+head(tabla)
+View(tabla)
+
+################################################################################
+
+#file.choose()  #buscar el archivo en el directorio
+
+direccion <- c("J:\\D-files\\petroleo2021.txt")
+
+
+tabla_excel <- read.csv(direccion, header = TRUE)
+View(tabla_excel)
+
+# Definir operador para excluir elementos de un vector
+"%not in%" <- function(x, tabla_excel) match(x, tabla_excel, nomatch = 0) == 0
+
+valores <- function(x, tabla_excel) match(x, tabla_excel, nomatch = 0) == 0
+valores
+View(valores)
+
+################################################################################
+
+# Crear fechas desde 2008 hasta 2020 (asegurando fechas válidas)
+y <- 2008:2020
+m <- formatC(7:9, width = 2, flag = 0)  # Meses de julio a septiembre
+d <- formatC(1:31, width = 2, flag = 0)  # Días del 01 al 31
+
+fechas <- c()
+for (i in 1:length(m)) {
+  fechas <- c(fechas, paste0(m[i], "/", d))
+}
+
+dates <- c()
+for (i in 1:length(y)){
+  dates <- c(dates, paste0(y[i], "/", fechas))
+}
+
+# Convertir las fechas en formato correcto y eliminar fechas inválidas (como 31 de febrero)
+dates <- as.Date(dates, "%Y/%m/%d")
+dates <- dates[!is.na(dates)]
+
+# Eliminar fines de semana (sábado y domingo)
+dates <- dates[weekdays(dates) %not in% c("Saturday", "Sunday")]
+
+# Formato de fecha para MRCI (ej. 111220 para 20 de diciembre de 2011)
+dates <- format(dates, "%y%m%d")
+dates
+
+# Loop para descargar los datos de MRCI
+for (j in 1:length(dates)) {
+  derivados <- paste("https://www.mrci.com/ohlc/2020/", dates[j], ".php", sep = "")
+  
+  # Asegúrate de que la URL esté correctamente formada
+  response <- GET(derivados)
+  
+  # Verifica si la respuesta es correcta
+  if (status_code(response) == 200) {
+    derivados.table <- readHTMLTable(rawToChar(response$content), header = T, colClasses = rep("character", 10), stringsAsFactors = F)
+    
+    # Filtrar los datos del Brent Crude Oil (ICE)
+    brent <- derivados.table[which(derivados.table[,1] %in% "Brent Crude Oil(ICE)"):(which(derivados.table[,1] %in% "Brent Crude Oil(ICE)")+15), ]
+    
+    # Asignar el valor a la variable correspondiente
+    assign(paste0("brent", j), brent)
+  } else {
+    cat("Error en la descarga de datos para la fecha:", dates[j], "\n")
+  }
+}
+
+# Crear un data.frame para almacenar todos los datos
+petroleo <- data.frame()
+
+for (i in 1:length(dates)) {
+  petroleo <- rbind(petroleo, get0(paste0("brent", i)))
+}
+
+# Nombres de las columnas para los datos
+nombres <- c("Mth", "Date", "Open", "High", "Low", "Close", "Change", "Volume", "Open Int", "Change")
+colnames(petroleo) <- nombres
+
+# Convertir a data.table y limpiar datos no deseados
+oil2 <- as.data.table(petroleo)
+oil2 <- oil2[!grepl("brent", Mth, ignore.case = T), ]
+oil2 <- oil2[!grepl("total", Mth, ignore.case = T), ]
+
+# Definir el directorio de trabajo para guardar el archivo
+setwd("S:/Cobertura petrolera/Brent Futures")
+
+# Escribir el archivo .txt con los datos de petroleo
+fwrite(oil2, "petroleo2021II.txt")
+
+# Fin del proceso
+
