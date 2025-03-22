@@ -1,0 +1,165 @@
+#practica de hipotesis nula 
+#n_muestra = 150 
+#varianza poblacional = 6,2
+#probabilidad de fallar  = 1-.99(alfa es el error)
+
+n = 150
+sigma_x = 6.2
+alfa = 0.01
+alfa_2 = 0.01 / 2
+z_alfa = qnorm(1-alfa_2)
+
+error =  (z_alfa / 2 ) * (sigma_x / sqrt(n))
+error
+
+#variacion del estimador al rededor de la media (error de 1.3 minutos)
+#con un 99% de llegada tenemos que las variaciones tienen un 1.33 hacia delante y hacia atras
+
+################################################################################
+
+round((E=alfa_2*))
+
+"Para construir el intervalo de confianza"
+
+n=20
+sigma_cuadradaX = 225
+sigma_sqr = sqrt(sigma_cuadradaX)
+alfa = 0.05
+alfa_2 = alfa / 2 
+x_media = 64.3
+Z_alfa = qnorm(1-alfa_2)
+CI = .95
+
+round(E = z_alfa * sigma_sqr / sqrt(n),2 )
+
+c((Li = xbarra - E),(Ls = xbarra + E))
+
+################################################################################
+#test para el nivel de confianza:
+
+library(BSDA)
+sigma = sqrt(225)
+
+zsum.test(mean.x = 64.3, sigma.x = sigma, n.x = 20, conf.level = 0.95, 
+          alternative = "two.sided")$conf.int
+
+attr(,"ci")
+
+################################################################################
+
+n = 40 
+x_promedio = 5.6 
+des_vest = 2.1 
+
+mean.x = x_promedio
+sigma_x = des_vest
+n_x = x_promedio 
+ci = 
+
+"construir intervalo de confianza" #con el 95% y con el 98% de confianza
+
+zsum.test(mean.x = x_promedio, sigma.x = sigma_x, n.x = n, conf.level = 0.95, 
+          alternative = "two.sided")$conf.int
+
+attr(,"ci")
+
+zsum.test(mean.x = x_promedio, sigma.x = sigma_x, n.x = n, conf.level = 0.98, 
+          alternative = "two.sided")$conf.int
+
+attr(,"ci")
+
+################################################################################
+
+n = 36
+ci = 0.98
+sujeto1 <-c(17,26,16)
+sujeto2 <-c(13,23,10)
+sujeto3 <-c(18,24,20)
+sujeto4 <-c(19,20,22)
+sujeto5 <-c(17,8,19)
+sujeto6 <-c(21,17,14)
+sujeto7 <-c(29,17,30)
+sujeto8 <-c(22,21,22)
+sujeto9 <-c(16,32,12)
+sujeto10 <-c(28,18,24)
+sujeto11 <-c(21,25,28)
+sujeto12 <-c(15,22,11)
+
+sujetos<-c(sujeto1,sujeto2,sujeto3, sujeto4,sujeto5,sujeto6,sujeto7,sujeto8,sujeto9,sujeto10,
+          sujeto11,sujeto12)
+
+n = legth(sujetos); s = sd(datos); x_barra = mean(sujetos), alpha = 1- ci
+alpha2 = alpha/2
+
+talpha = qt(1-alpha2, n-1)
+E = alpha2*s/sqrt(n)
+
+################################################################################
+
+t.test(sujetos, conf.level = 0.98)$conf
+attr(,"conf.level")
+
+n =  12 ; s = 49.6 ; xbarra = 214.1 ; apha = $=0.05$ ; alfa2 = alfa /2
+alfa_Z = qt(1-alfa_2, n-1)
+E = round(alfa_Z*s/sqrt(n),2)
+c((Li =xbarra - E), (Ls = xbarra + E))
+
+################################################################################
+
+library(DescTools) #sirve solo cuando es conocida la varianza poblacional
+
+int<-TTestA(mx = 214.1, sx = 49.6, nx = 12, conf.level = 0.95)$conf.int
+int
+
+attr( ,"conf.level")
+
+
+################################################################################
+
+int<-TTestA(mx = 1.63, sx = 0.0584, nx = 25, conf.level = 0.90)$conf.int
+int
+
+attr(, "conf.level")
+
+
+################################################################################
+
+
+int<-TTestA(mx = 34, sx = 6.9, nx = 20, conf.level = 0.98)$conf.int
+int
+
+attr(, "conf.level")
+
+Ejemplo 3.10 
+
+x <- 130; n <- 210; p1 <- x/n
+alpha <- 0.05; alpham <- alpha/2
+E <- qnorm(1 - alpha m)sqrt(p1(1-p1)/n)
+c((Li=round (p1-E,4)), (ls=p1+E))
+[1] 0.553400 0.684728
+
+################################################################################
+
+3.2 Intervalos de confianza para una proporción
+
+Construir un 95% de confianza para un grupo de personas.
+n<- 846; p1 <- 0.45; alpha <- 0.05; alpham <- alpha/2; x <- 846*0.45
+int<- prop.test(x,n, conf.level=1 - alpha, correct=F)$conf.int
+int
+[1] 0.4167775 0.4836745
+attr(, "conf.level")
+[1] 0.95
+
+################################################################################
+
+Ejemplo 3.17 Suponga que para un grupo de 30 personas seleccionadas 
+
+n=30: s=4.52
+alpha <- 0-04; alpham <- alpha/2
+sup <- qchisq(alpham, df = n-1, lower.tail = T)
+inf <- qchisq(p=1 - alpham, df = n-1, lower.tail=T)
+c(Li <- (n-1)*s^2/inf, Ls z- (n-1)*s^2/sup)
+[1] 12.68896 38.04181
+
+
+
