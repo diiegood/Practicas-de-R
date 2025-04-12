@@ -1,0 +1,69 @@
+#Practica Modelo Probit Ordinal o Probit Ordenado
+
+library(tidyverse)
+library(knitr)
+library(foreign)
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(car)
+library(MASS)
+library(stargazer)
+library(lmtest)
+library(zoo)
+library(erer)
+library(lattice)
+library(caret)
+library(e1071)
+library(arsenal)
+
+#cargar los datos del excel
+setwd("C:\\Users\\creep\\OneDrive\\Escritorio\\programacion")
+
+#funciones de extraccion#
+datos<-read.csv("datos.csv")  
+View(datos)
+dim(datos) #para ver el tamaño de los datos , renglones y columnas
+
+################################################################################
+
+"Se ordenan los datos para el modelo Probit" # por categorias segun esos criterios
+
+#se toma la columna Cat.Rev.Year / se vuelve una variable factor de texto como numero, para ordenar
+datos %>% count(Cat.Rev.Year) #tabla de frecuencia para ver la distribucion de los datos
+datos$Cat.Rev.Year<-factor(datos$Cat.Rev.Year, order=TRUE,
+                           levels= c("1. Menos de 1M",
+                                     "2. Mas de 1M y menos de 5M",
+                                     "3. Mas de 5M y menos de 20M",
+                                     "4. Menos de 20M"))
+
+datos %>% count(Cat.Rev.Year)
+
+"Para categorizar los datos" #cob base a comentarios positivos y seguidores
+
+datos$positive_n<-0
+datos$positive_n[(datos$positive_year<=4)]<-1
+datos$positive_n[(datos$positive_year>4) & (datos$positive_year<=60)]<-2
+datos$positive_n[(datos$positive_year>60)]<-3
+datos$positive_n<- factor(datos$positive_n)
+
+datos$followers_n<-0
+datos$followers_n[(datos$Followers_year<=50)]<-1
+datos$followers_n[(datos$Followers_year>50) & (datos$Followers_year<=500)]<-2
+datos$followers_n[(datos$Followers_year>60)]<-3
+datos$followers_n<- factor(datos$followers_n) 
+
+datos%>% count(positive_n)
+datos%>% count(followers_n)
+
+tabla_datos<-tableby(~revenue_year + Price + year + mes + positive_year + negative_year + Followers_year + 
+                       Reviews_year + positive_n + followers_n + Score + Adventure + Singleplayer + Story.Rich + 
+                       Horror + X3D + Survival + Choices.Matter + Historical + Mystery + Replay.Value + Early.Access + 
+                       Female.Protagonist + Lovecraftian + Gore + Open.World + Multiplayer + Co.op + Indie + Atmospheric +
+                       Violent + Online.Co.Op + Third.Person + Sandbox + Strategy + Difficult + Gore + Soundtrack + Great.Soundtrack + 
+                       First.Person + Simulation + RPG + Character.Customization + Funny + Casual + Sci.fi + Exploration + Action + 
+                       Sexual.Content + Realistic + Nudity + Fantasy + Anime + Building + Turn.Based + Tactical + Management + Psychological + Visual.Novel + 
+                       Psychological.Horror + Moddable + Crafting, data=datos)
+
+summary(tabla_datos,title="Base Completa")
+
