@@ -1,0 +1,66 @@
+library(dplyr)
+library(gapminder)
+##relación entre las variables
+#1:Dispersión
+#2: si existe una relación, como es la relación: covarianza mayor que 0 relación directa; menor que 0 relación inversa e igual a 0 no hay relación
+#3:la fuerza de la relación coef. Pearson r es cercana a 1 es fuerte, cercana a -1 es fuerte inversa y cercana a 0 no hay relación lineal
+##################################################################
+####Residuos de una regresión simple
+##Normalidad en los residuos (media 0 y desviación tipica 1)
+##Homocedasticidad: varianzas constantes 
+#y residuos; x variable predictora
+##Independencia de los residuos, no se debe poder explicar, debe de ser aleatoria y se usa la prueba de Durbin Watson que debe de ser entre 1.5, 2.5
+
+
+tabla<-data.frame(gapminder)
+View(tabla)
+tabla$continent<-NULL
+plot(tabla$lifeExp, tabla$gdpPercap)
+
+#covarianza 
+cov(tabla$lifeExp, tabla$gdpPercap)
+#coefi. Pearson
+cor.test(tabla$lifeExp, tabla$gdpPerca)
+regresion<-lm(tabla$gdpPercap ~ tabla$lifeExp)
+summary(regresion)
+#Significancia menor 0.05 es significativo (improbable que existiera azar en el resutlado)
+#r cuadrada proporción que el modelo explica de los datos arriba de 0.85 
+#p value menor que 0.05 rechazo la hipotesis nula
+
+
+##Residuos 
+#Vector de los residuos 
+residuos<-residuals(regresion)
+hist(residuos)
+mean(residuos)
+
+#homocedasticidad
+plot(tabla$gdpPercap, residuos)
+#residuales contra ajustes
+
+#Test Watson 1.5 y 2.5
+library(lmtest)
+dwtest(regresion)
+plot(regresion)
+
+#Ejemplo en finanzas de una funcion cuadratica perfecta 
+
+library(quadprog)
+
+# Matriz de covarianza (Omat)
+Omat <- matrix(c(0.1, 0.02, 0.02,
+                 0.02, 0.08, 0.01,
+                 0.02, 0.01, 0.06), 
+               nrow = 3, ncol = 3)
+
+# Vector lineal (dvec): típicamente un vector de ceros
+dvec <- c(0, 0, 0)
+
+# Restricciones (amat y bvec)
+amat <- cbind(c(1, 1, 1),   # Restricción: sum(weights) = 1
+              c(0.1, 0.2, 0.15))  # Restricción: retorno esperado >= 0.15
+bvec <- c(1, 0.15)
+
+# Resolver el problema cuadrático
+result <- solve.QP(Omat, dvec, amat, bvec)
+print(result$solution)  # Solución óptima (pesos de los activos)
