@@ -1,0 +1,206 @@
+"Tarea 6"
+"Practica Final"
+
+################################################################################
+"Primer paso correr el codigo"
+#librerias
+library(tidyverse)
+library(caret)
+library(dplyr)
+library(ggplot2)
+library(lmtest)
+
+# Crear un conjunto de datos de ejemplo
+set.seed(123)
+
+data <- data.frame(
+  id = 1:10000,
+  edad = sample(18:70, 10000, replace = TRUE),
+  ingresos = sample(1000:100000, 1000, replace = TRUE),
+  gasto = sample(1000:11000, 10000, replace = TRUE),
+  region = sample(c("Frontera Norte", "Zona Centro", "Golfo", "Pacífico"), 10000, replace = TRUE)
+)
+
+
+################################################################################
+# ver rango de datos, cantidad de variables que se pueden pedir , hay remplazo o no (si sale 10)
+
+View(data) #para ver la tabla anterioremente creada.
+
+"paso 1- filtrado de informacion clasificandola por gasto"
+
+#gasto alto si es mayor a 9,000.
+#gasto medio si esta entre 9,000 y 4000.
+#gasto bajo si es menor de 4000.
+# Crear una nueva tabla con la columna "gasto_alto"
+
+#Filtrado General / Clasificacion Gral de la tabla por gasto :
+
+Tabla1 <- data %>% mutate(tipo_de_gasto = case_when( 
+  gasto >= 9000 ~ "Gasto Alto",
+  gasto < 9000 & gasto >= 4000 ~ "Gasto medio",
+  gasto < 4000 ~ "Gasto bajo", 
+  TRUE ~ "N/A"
+))
+
+View(Tabla1)
+
+
+################################################################################
+"paso 2 craer columna que ratio (gasto/ingreso)"
+Tabla1 <-Tabla1 %>% mutate(ratio_gasto_ingreso=(gasto/ingresos)*100)
+view(Tabla1)
+
+
+################################################################################
+"paso 3 filtrar aquellos que su ratio>100 " 
+Tabla1<-Tabla1 %>% filter(ratio_gasto_ingreso>100)
+View(Tabla1)
+
+
+################################################################################
+"paso 4 filtrar a los que se pueden clasificar como de gasto alto (mayor de 9000) "
+
+# Filtrar en el conjunto de "gente_gastalona" para ratios > 100 y gasto > 9000
+
+Tabla1<-Tabla1%>% filter(gasto > 9000)
+View(Tabla1)
+
+################################################################################
+"paso 5 hacer una tabla que selecciona solamente (ingresos,  gastos, columna de clasificacion, ratio )"
+
+Tabla_limpia <- Tabla1 %>% select(-id, -edad, -region)
+View(Tabla_limpia)
+
+
+################################################################################
+"Paso 6 Graficar la dispersion de la relacion ingreso y gasto con titulos"
+
+
+plot(Tabla_limpia$ingresos, Tabla_limpia$gasto,
+     xlab="gasto",
+     ylab="ingresos",
+     main= "Grafica de disperson de ingreso y gasto de gasto gral",
+     col="darkred",)
+
+
+################################################################################
+
+"Paso 7 hacer una  regresion lineal"
+
+#variable independiente (x) = ingresos
+#variable dependiente (y)= ratio_gasto_ingreso
+
+
+#covarianza
+Covarianzas_tabla<-cov(Tabla_limpia$ingresos, Tabla_limpia$ratio_gasto_ingreso)
+Covarianzas_tabla
+
+#Coeficiente de Pearson
+test_cor_ingreso<-cor.test(Tabla_limpia$ingresos, Tabla_limpia$ratio_gasto_ingreso)
+test_cor_ingreso
+
+#Datos de la regresion.
+regresion_ingreso<-lm(Tabla_limpia$ingresos ~ Tabla_limpia$ratio_gasto_ingreso)
+summary(regresion_ingreso)
+plot(regresion_ingreso)
+
+#Residuos
+residuos<-residuals(regresion_ingreso)
+hist(residuos)
+mean(residuos)
+
+#homocedasticidad
+plot(Tabla_limpia$ratio_gasto_ingreso, residuos)
+
+#Test Watson 1.5 y 2.5
+dwtest(regresion_ingreso)
+plot(regresion_ingreso)
+
+################################################################################
+"Paso 8 invertir los valores , hacer una regresion"
+
+#variable independiente (x) =  gasto
+#variable dependiente (y)= ratio_gasto_ingreso
+
+#covarianza
+Covarianzas_tabla<-cov(Tabla_limpia$gasto, Tabla_limpia$ratio_gasto_ingreso)
+Covarianzas_tabla
+
+#Coeficiente de Pearson
+test_cor_gasto<-cor.test(Tabla_limpia$gasto, Tabla_limpia$ratio_gasto_ingreso)
+test_cor_gasto
+
+#Datos de la regresion.
+regresion_gasto<-lm(Tabla_limpia$gasto ~ Tabla_limpia$ratio_gasto_ingreso)
+summary(regresion_gasto)
+plot(regresion_gasto)
+
+
+#homocedasticidad
+plot(Tabla_limpia$ratio_gasto_ingreso, residuos)
+
+#Test Watson 1.5 y 2.5
+dwtest(regresion_gasto)
+plot(regresion_gasto)
+
+
+################################################################################
+"Paso 9  Evaluacion de ambos modelos, analisis de R^2, y correlaccion."
+"Correlaccion ingreso / ratio de gasto/ingreso"
+
+#covarianza en en la relacion ingreso / ratio gasto_ingreso = -339364.6
+#grados de libertad 170 / t-value = -18.976 / p-value 2.2e-16
+#hipotesis alternativa: con un 95% de confianza es de -0.8669114 / -0.7694506
+#estimacion de miestras de la correlacion es de -0.8241908
+#valor de la R^2 0.6793 / R^2 ajsutada 0.6774
+
+"Correlacion gasto / ratio gasto/ingreso"
+
+#covarianza en en la relacion gasto / ratio gasto_ingreso = 7886.739
+#t-value = 1.1447 / grados de libertad 170 / p-value 0.2539
+#hipotesis alternativa: verdadera la correlacion no es igual a 0
+#con 95% de confianza es de -0.06299773 / 0.23403275
+#correlaccion es de 0.08746116
+#R^2 0.007649 / R^2 ajustada 0.001812
+
+
+#Se puede ver que el modelo se adapta mas a el gasto ya que tiene una mayor correlacion
+#la correlacion aunque es baja es mejor que la de el ingreso, porque es negativa quiere 
+#decir que no tiene correlacion directa , como la covarianza es mayor en gasto quiere
+#decir que tambien hay mas relacion con relacion al ratio, de gasto/ingreso.
+
+#A su vez la R^2 nos dice que el modelo de ingreso se ajusta mucho mejor que en gasto ya que en 
+#ingreso el valor el valor es de 0.6793, mientras que en gasto la R^2 es demasiado baja por lo que
+#no se ajusta tanto aunque tiene mayor correlacion, ya que la otra es negativa.
+
+
+
+################################################################################
+################################################################################
+chiste <- function(pregunta) {
+  if (pregunta == "Si Batman en la noche es el caballero de la Noche?") {
+    return("Entonces en  el dia es un grosero?.")
+  } else {
+    return("Entonces en  el dia es un grosero?.")
+  }
+}
+
+chiste2 <- function(pregunta) {
+  if (pregunta == "Sabes porque un carpintero no paga sus deudas?") {
+    return("Por que esta construyendo su buro de credito.")
+  } else {
+    return("Por que esta construyendo su buro de credito.")
+  }
+}
+################################################################################
+"Paso 10 - chiste"
+
+# Llamar la función con la pregunta
+
+chiste("Si Batman en la noche es el caballero de la Noche?")
+
+chiste2("Sabes porque un carpintero no paga sus deudas?")
+
+
+
