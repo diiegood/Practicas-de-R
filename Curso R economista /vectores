@@ -1,0 +1,410 @@
+#practica asignar operaciones con vectores:
+#principios basicos de R / matrices, vectores y operadores logicos.
+
+#vector simple de a
+a<-c(1,2,3,4,5,6)
+
+#vector de boleanos
+boleanos <-c(T,F,T,T)
+
+#vector con strings
+c<-c("Ciudad de Mexico", "Guadalajara", "Chiapas", "Cancun")
+
+#genera un vector de numeros del 2 al 29
+secuencia<-seq(2,30) 
+secuencia
+
+#genera una repeticion de 5 veces el valor de la izquierda
+repeticion<-rep(2,5)
+repeticion
+
+################################################################################
+
+#primera matriz construida con valores secuenciales
+#nrow son las filas / ncol son las columnas 
+matriz <-matrix(c(1,2,3,4,5,6,7,8,9,10,11,12),nrow=3,ncol=4)
+matriz
+
+"X<-read.csv("ubicacion del archivo .terminacion del archivo")"
+#Ejemplo:
+X<-read.csv("X.csv")
+
+################################################################################
+#practica autodidacta 
+
+#para nombrar filas de una matriz
+row.names(x)<-x$Sector
+
+#para eliminar nombres de la matriz / select es para seleccionar.
+#se pone el nombre de la matriz, la fila que se desea borar con signo negativo
+x<-select(x, -Sector)
+
+#para ver el formato de la base de datos
+class(matriz) #dice que esta guardada como un array 
+
+#para convertirla en una matriz
+matriz<-as.matrix(matriz)
+matriz
+
+################################################################################
+
+dim(matriz) #da el tamaño de la matriz.
+
+numero_filas<-nrow(matriz)#para ver las filas de la matriz
+numero_filas
+
+numero_columnas<-ncol(matriz) #para ver las columnas de la matriz
+numero_columnas
+
+
+################################################################################
+"Operadores Logicos nomneclatura"
+
+#1 dim()            para ver el tamaño de la matriz
+#2 nrow()           para ver el tamaño de las filas de la matriz
+#3 ncol()           para ver el tamaño de las columnas de la matriz
+#diag()             para ver la diagnolad de la matriz
+# *                 multiplicador de elemento
+# %*%               producto matricial
+# %o%               producto exterior
+# %x%     producto de Kronecker / opearcion sobre dos matrices de tamaño arbitrario
+# cbind             para agragar filas 
+# rbind()           para agregar columnas
+# t()               para poner matriz transpuesta
+# solve()           para poner inversa la matriz de A
+# solve(A,b)        para poner la solucion de la matriz A
+# eigen()           autovalores y autovectores
+# qr()              Descomposicion QR 
+# chol()            Descomposicion de Cholesky
+# svd()             Descompisicion singular
+
+################################################################################
+#primera base de datos / Manipulacion de bases de datos en R
+
+#librerias:
+library(tidyverse) #para el comando select en R (uso de select)
+library(dplyr)
+
+
+x<-"C:\\Users\\creep\\OneDrive\\Escritorio\\programacion\\x.csv"
+x<-read.csv(x)
+
+
+################################################################################
+"Intro seleccion de variables"
+
+#seleccion de los datos Sector del conjunto de datos x
+sectores<-x$Sector  #para seleccionar la variable sector de la base de datos
+sectores   #se convierte en un vector la variable Sector
+
+#seleccion de un conjunto de datos los primeros datos del 1:10
+seleccion_de_filas<-x[1:10,]  #seecciona los primeros 10 datos (desde la fila 1 a la 10)
+seleccion_de_filas
+
+#seleccion de variables 11 variable de la fila 2
+valores<-x[2,11] # 2 representa la fila y 11 la columna, nos da el valor de esa posicion
+valores
+
+#seleccionar toda el vector en conjunto
+valores1<-x[,3] #selecciona toda la tercera columna
+valores1
+
+#seleccion de valores especificos en una columna
+conjunto_datos<-x[1:3,"Sector"] #seleccion de los primeros 3 datos de la columna de Sector
+conjunto_datos
+
+"Seleccionar con comando select" #select(base_de_datos,variable1, variable2,etc)
+
+funcion_Select<-select(x,C11,C21) #selecciona 2 columnas de la base de datos x
+funcion_Select
+
+################################################################################
+"Practica"
+
+ruta<-"C:\\Users\\creep\\OneDrive\\Escritorio\\programacion\\Xpbt.csv"
+file.exists(ruta) 
+tabla<-read.csv(ruta) #para ver el archivo con los datos.
+View(tabla) #para ver la tabla
+
+tabla_sector<-substr(tabla$Sector, 6,7) #para extraer la columna del sector de la tabla.
+#son 6 posiciones antes / que considere solo 2 sectores (7)
+
+tabla1<-tabla %>% select(-Sector) #se selecciona toda la tabla borrando la columna sector
+tabla1
+View(tabla1)
+
+colnames(tabla1)<-"practica1" #para renombrar la tabla como practica 1
+
+Practica <-diag(tabla1$practica1) #se genera una matriz con los datos. 20x20
+Practica
+
+colnames(Practica)<- rownames(x)
+row.names(Practica)<- rownames(x)
+
+################################################################################
+"Matrices" #operaciones con matrices
+#para hacer diagonal la matriz 
+#funcion cbind / para unir columnas de una matriz o vector
+#funcion rbind / es para unir filas de una matriz o de un vector
+#traspuesta / funcion que sirve para trasponer cambiar un vector o una matriz
+
+Matriz_traspuesta<-t(x) #trasponer el vector
+Matriz_traspuesta
+
+#Union de matriz cuadrada con el vector 
+
+operacion_matricial<-cbind(x,Practica) #se une una columna 
+operacion_matricial
+
+operacion_matricial2<-rbind(x$Sector, matriz ) #se une una fila especifia llamada sector de x a matriz
+operacion_matricial2
+
+#acceder a un conjunto de datos de una matriz / filas y columnas:
+
+fila_de_x<-x[2,]  #se muestra la segunda fila de la matriz x
+fila_de_x
+
+columna_de_x<-x[,2] #se muestra la segunda columna
+columna_de_x
+
+#para solo indicar un valor especifico
+valor_especifico<-x[2,3] #se muestra el valor que ocupa la posicion de:
+#la segunda fila y la tercer columna
+valor_especifico
+
+
+#para un subconjunto dentro de la matriz:
+subconjunto_matricial<-x[1:2,1:5] #muestra un subconjunto de la matriz dentro de ese espacio
+subconjunto_matricial
+
+################################################################################
+
+"Multiplicacion de Matrices"
+
+dim()  #dimension de la matriz 
+nrow() #numero de filas
+ncol() #numero de columnas
+*      #multiplicacion elemento a elemento
+diag() #diagonal de una matriz
+%*%    #producto matricial
+%o%    #producto exterior
+%x%    #producto de Kronecker
+cbind() #agregar filas
+rbind() #agregar columnas
+t()     #matriz transpuesta
+solve() #Inversa de la matriz A
+solve(A, b) #Solucion de la matriz A
+eigen()  #Autovalores y Autovectores
+qr()  #descomposicion QR
+chol() #descomposicion de Cholensky
+svd()  #descomposicion singular
+
+"Producto Kronecker"
+
+#Se define para cualquier par de matrices y representa el producto tensorial de las
+#transformaciones lineales asociadas a cada una de las matrices.
+
+#Este producto es asociativo, bilineal, no es conmutativo y se comporta bien con la inversa
+#y con el calculo de los valores singulares.
+
+################################################################################
+
+"Multiplicacion Suma y Resta de Matrices"
+
+#se generan dos matrices:
+
+#se crea una matriz de dos filas y cuatro columnas
+matriz<-matrix(c(1,2,3,4,5,6,7,8), nrow=2, ncol=4); matriz
+
+#se usa la funcion de secuencia que asigna valores
+matriz_2<-matrix(seq(6,13), nrow=2, ncol=4); matriz_2
+
+#se usa la funcion de dimension para ver que dimension tiene cada una de ellas:
+dim(matriz)
+dim(matriz_2)
+
+#multiplicacion elemento por elemento de matriz; 
+multiplicacion <- matriz * matriz_2; multiplicacion
+
+multiplicacion_a2 <- matriz%*%matriz_2 #no se puede porque las matrices no son compatibles
+
+multiplicacion_2 <- matriz%*%t(matriz_2)  #se traspone la matriz por lo que se puede
+
+"al trasponer la matriz se invierten, si era 2 X 3 se convierte en 3 X 2"
+"por lo que ahora si se puede realizar la operacion que antes no podia"
+
+#(2,4) * (2,4) = no se puede / si se traspone se invierte de  (2,4) a (4,2)
+#(2,4) * (4,2) = (2,2) 
+
+#multiplicacion de matriz es de fila * columna 
+#se puede multiplicar si es de (3,2) * (2,3) SI SE PUEDE  =  ( 3 * 3 )
+#se puede multiplicar una de 3 filas con 2 columnas por una de 2 filas con 3 columnas
+#no se puede multiplicar si es de (3,2) * (3,2) NO SE PUEDE
+
+
+multiplicacion3 <- multiplicacion %o% t(multiplicacion_2) #multiplicacion externa
+multiplicacion3
+
+################################################################################
+"Multiplicacion Krnonecker"
+
+mult_kr <- multiplicacion %x% t(multiplicacion_2) ; mult_kr
+
+
+#Multiplicacion con datos reales  ##############################################
+
+#se cargan los datos
+matriz_x<-"C:\\Users\\creep\\OneDrive\\Escritorio\\programacion\\x.csv"
+matriz_x<-read.csv(matriz_x) ; matriz_x
+
+matriz_Xp<-"C:\\Users\\creep\\OneDrive\\Escritorio\\programacion\\Xpbt.csv"
+matriz_Xp<-read.csv(matriz_Xp) ; matriz_Xp
+
+#primero se debe comprobar que las dos matrices tengan la dimension que se necesite
+
+dim(matriz_x)  #dimension de 20,21
+dim(matriz_Xp) #dimension de 20,2
+
+
+producto<-matriz_x %*%  matriz_Xp ; producto 
+
+#suma de la matriz_x , se suman las filas 
+suma_filas<-rowSums(matriz_x) #se obtiene un vector con la informacion
+View(suma_filas)
+
+################################################################################
+
+#leer base de datos que contiene la demanda final
+
+y<-"C:\\Users\\creep\\OneDrive\\Escritorio\\programacion\\y.csv"
+y<-read.csv(y) ; y
+
+#se obtienen valores de la demanda final #######################################
+#se van a sumar las filas / se obtendra como resultado una nueva columna
+df<- rowSums(y) ; df #se pueden sumar porque solo se tienen valores numericos
+"Si la matriz tiene dentro una columna con caracteres no sirve esta funcion se usa otra"
+
+
+#demanda intermedia y la demanda final dan el total de la produccion total
+#se suman las matrices de demanda intermedia y demanda final
+
+#suma de matrices
+produccion_total<-matriz_Xp + df ; produccion_total
+
+#trasponer matrices para hacer comparacion.
+traspuesta_x<-t(matriz_x); traspuesta_x
+traspuesta_produccion_total<-t(matriz_Xp) ; traspuesta_produccion_total
+
+#para verificar si es lo mismo: ################################################
+#el resultado de la suma de las dos matrices debe coincidir con la matriz traspuesta de Xpbt
+#o tambien se pueden restar las matrices Xpbt con la de df, para que quede la demanda intermedia
+
+
+#esta funcion sirve para comparar con valores boleanos dos funciones
+ifelse(matriz_Xp == df, "Verdadero", "Falso") #indica en cada elemento de la matriz si coinciden los valores
+#la variacion puede ser de (-2,-1,0,1,2) en comparacion a la diferencia por valores entre si
+#o tambien puede indicar los valores Verdadero y Falso como se configuro
+
+
+################################################################################
+
+"funcion solve" 
+#te permite realizar la inversa de la matriz / o tambien resolver un sistema de ecuaciones
+
+a<-c(21,4)
+
+b<-c(-3,8)
+
+A<-cbind(a,b) #se crea una matriz uniendo el vector a y b
+
+#se le saca la matriz inversa
+A_inversa<-solve(A) 
+
+################################################################################
+#funcion solve para resolver un sistema de ecuaciones dado un modelo de mercado.
+"Dado el modelo de mercado Qd = Qs:"
+"Qd = 21-EP;     Qs = -4+8P;    Obtener   Q*  y P  "
+"Se reformula  Q+3P=21  y  Q-8P=-4  econtrar(Q*, P)" 
+
+matriz_a <- matrix(c(1, 1, 3, -8), nrow = 2, ncol = 2)
+
+
+matriz_b<-matrix(c(21, -4), nrow= 2, ncol=2 )
+
+
+resultado <-solve(matriz_a, matriz_b)
+
+
+#la cantidad demandada y oferta son 14 a un precio de equilibrio de 2.27
+
+
+################################################################################
+
+"autovectores y autovalores"
+
+#para obternerlos se obtiene con la funcon eigen
+c <-matrix(c(-1,2,3,4), nrow=2, ncol=2)
+
+lambda <- eigen(A); lambda
+
+
+################################################################################
+#Descomposicion QR
+
+matriz_c <- matrix(c(12,6,-4,51,167,24,4,-68,-41), nrow = 3, ncol = 3 )
+
+#se aplica la funcion de QR para descomponer
+QR<-qr(matriz_c) ; QR #nos da la matriz triangular
+
+#comprobar si la descomposicion de la matriz ortogonal y la matriz triangular al multiplicar
+#nos da la matriz inicial
+
+Q<- qr.Q(QR, complete=FALSE) ; Q
+
+R<-qr.R(QR, complete=FALSE); R #da la matriz triangular superior / primer elmento de la funcion QR
+
+AZ <- Q%*%R ; AZ #se comprueba el resultado de la descomposicion matricial
+
+%*% #MULTIPLICACION MATRICIAL
+
+################################################################################
+"Descomposicion de Cholesky"
+
+M <- matrix(c(5,1,1,3),2,2)
+
+cm <-chol(M) #descomposicion de cholensky de la matriz M / 
+#matriz triangular inferior y su traspuesta deben de dar lo mismo que la matriz inicialmente
+
+"La traspuesta de la matriz descompuesta de cholensky mulitplicada por la matriz triangular inferior"
+#deben de dar la matriz original
+t(cm)%*%cm  #comprobacion
+
+################################################################################
+"Descomposicion de valores singulares"
+
+ A <- matrix(c(12, 6, -4, -51, 167, 24, 4 ,-68, -41),3 , 3)
+
+svd(A)
+
+"Modelo de insumo producto"
+#este describe las relaciones de compra y venta entre diferentes actividades
+#economicas.
+
+"Supuestos" ####################################################################
+
+#El funcionamiento de la economia presupone un sistema de intercambio entre los
+#participantes de la actividad de produccion, distribucion, cambio y consumo
+
+#Todos y cada uno de los participantes dentro del sistema realizan un doble papel
+#por un lado ofertan productos o servicios y por el otro demanda estos productos
+
+#Los participantes se agrupan en sectores de actividad economica, por lo que un 
+#un sector se puede definir como un conglomerado de empresas, industrias o firmas,
+#que oferta y demanda productos, por lo que una matriz de insumo producto puede 
+#tener difrentes niveles de desagregacion.
+
+################################################################################
+#La matriz de gastos directos totales representa la suma de los gastos directos y 
+#de los gastos de primer orden, segundo orden y elr esto que sea necesarios.
+
+
